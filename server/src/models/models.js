@@ -1,18 +1,20 @@
 /*
+----THIS FILE ONLY PROVIDES STRUCTURE, IT IS NOT CODE.--------
+
 FINAL STRUCTURE
 
-Collaborators : [ 
+Collaborators : [
 {
 	“projectId” : id,
 	userId: id,
 	‘authority’  :   ‘owner’/ ‘collaborators’,
 	'role' : [ ] // because when user will send request, he has to tell which role he is applying for.
-	
+
 	'status' : string
 		'accepted' // he is accepted            ( show only accepted users in project desc page )
-		'pending'  // user not accepted yet, 
-		'rejected' // user is rejected 
-		
+		'pending'  // user not accepted yet,
+		'rejected' // user is rejected
+
     ‘comments’ :  [
 		"username": //person who commented
         “comment”: string
@@ -47,5 +49,8 @@ Project = {
     skillsRequired: [ android, node, python, ML etc..] //required skills for the project.
     collaboratorCount: int, //number of active collaborators
 }
+
+-----FUTURE CHANGES----------
+user location ( only City, Country )
 
 */
