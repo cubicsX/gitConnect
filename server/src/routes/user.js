@@ -1,5 +1,4 @@
 const router = require("express").Router()
-const config = require("../../config")
 const axios = require("axios")
 const { redirectURL, githubAuth } = require("../middleware/githubAuth")
 const database = require("../database/db")

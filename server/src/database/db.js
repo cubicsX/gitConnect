@@ -1,5 +1,4 @@
 const MongoClient = require("mongodb").MongoClient
-const config = require("../../config")
 
 //to access the db object in other functions and files.
 
@@ -12,7 +11,7 @@ var db
 const connectDB = (callback) => {
 	if (db) return callback()
 	MongoClient.connect(
-		config.MONGODB,
+		process.env.MONGODB,
 		{
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
