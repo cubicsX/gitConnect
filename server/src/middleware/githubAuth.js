@@ -27,11 +27,11 @@ const githubAuth = async (req, res, next) => {
 			},
 		})
 		req.user = userGithub
+		next() // call the route
 	} catch (error) {
 		console.log(error)
 		return res.send("Github Login failed, Try Again!")
 	}
-	next() // call the route
 }
 
 module.exports = {

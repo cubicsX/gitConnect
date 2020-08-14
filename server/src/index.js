@@ -20,16 +20,6 @@ app.get("/dashboard", auth.authenticate, function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
 
-app.get("/test", (req, res) => {
-	res.cookie("jwt", "Umang")
-	res.redirect("/remove")
-})
-
-app.get("/remove", (req, res) => {
-	console.log(req.cookies)
-	res.send(req.cookies)
-})
-
 // MANAGE ALL INVALID ROUTER IN invalid.js ROUTES FILE
 app.listen(process.env.PORT, () =>
 	console.log("Server Started on :", process.env.PORT)
