@@ -1,34 +1,27 @@
-const express = require("express")
-const app = express()
-<<<<<<< HEAD
+const express = require("express");
+const app = express();
 const path = require('path')
-//const userRouter = require("./routes/user")
-//const config = require("../config")
-/*
-=======
-const cookieParser = require("cookie-parser")
+const cookieParser = require("cookie-parser");
+const auth = require('./middleware/jwtauth');
+const userRouter = require("./routes/user");
 
-const userRouter = require("./routes/user")
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
->>>>>>> 69ae0d5f934b3350437853685140a2ad41b995b5
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
-
-app.use("/api/user", userRouter)
-
-// so server response won't send the type of backend( express )
-// MANAGE ALL INVALID ROUTER IN invalid.js ROUTES FILE
-<<<<<<< HEAD
-*/
+app.use("/api/user", userRouter);
 app.use(express.static(path.join(__dirname,'build')));
 app.get('/',function(req,res){
     res.sendFile(path.join(__dirname,'build','index.html'));
-})
-app.listen('3000', () => console.log("Server Started on :3000"));
-=======
+});
 
+app.get('/dashboard',auth.authenticate,function(req,res){
+    res.sendFile(path.join(__dirname,'build','index.html'));
+});
+
+// so server response won't send the type of backend( express )
+// MANAGE ALL INVALID ROUTER IN invalid.js ROUTES FILE
+console.log(process.env.PORT);
 app.listen(process.env.PORT, () =>
-	console.log("Server Started on :", process.env.PORT)
-)
->>>>>>> 69ae0d5f934b3350437853685140a2ad41b995b5
+	console.log("Server Started on :",process.env.PORT)
+);

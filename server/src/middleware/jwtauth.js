@@ -9,7 +9,9 @@ const getToken = (id) => {
 
 const authenticate = async (req, res, next) => {
 	try {
+
 		const token = req.cookies["jwt"]
+		console.log(token)
 		const idObject = jwt.verify(token, process.env.JWT_SECRET)
 		req.userId = idObject.id
 		next()

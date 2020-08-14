@@ -38,7 +38,7 @@ router.get("/github", githubAuth, async (req, res) => {
 		}
 		const token = getToken(userId)
 		res.cookie("jwt", token, { httpOnly: true, sameSite: true })
-		res.send("Login Successful")
+		res.redirect("/dashboard")
 	} catch (error) {
 		res.status(500).send("Github authentication Failed, Try again!")
 		console.log(error)

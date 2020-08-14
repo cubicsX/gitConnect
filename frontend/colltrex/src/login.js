@@ -11,13 +11,15 @@ class login extends Component {
 
     handleloginstatus = (event) => {
         //check for responce status ...here in this function and then update the islogged state
+        /*
         if (this.state.islogged){
             this.props.history.push("/dashboard")
         }
         else{
             alert("Sorry invalid")
             this.props.history.push("/")
-        }
+        }*/
+        window.open(`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}` ,"_self")
     }
     render() {
         return (
@@ -39,7 +41,8 @@ class login extends Component {
             <fon2><h3 className="fon2">Start Exploring</h3></fon2>
             <p><button onClick={this.handleloginstatus}>Connect with <i className="fa fa-github"></i></button> </p>
         </div>
-    </div>        )
+    </div>        
+    )
     }
 }
 export default login
