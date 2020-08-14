@@ -17,7 +17,6 @@ router.get("/login", (req, res) => {
 
 router.get("/github", githubAuth, async (req, res) => {
 	//we will get user data in req.user.data
-	return res.send(req.user.data)
 	//check if user exists
 	try {
 		let userId = await db.findOne(
@@ -37,8 +36,9 @@ router.get("/github", githubAuth, async (req, res) => {
 			userId = user.insertedId
 		}
 		const token = getToken(userId)
-		res.cookie("jwt", token, { httpOnly: true, sameSite: true })
-		res.send("Login Successful")
+		console.log("=======UserID====: ", userId)
+		res.cookie("jwt", token, { path: "/", httpOnly: true, sameSite: true })
+		res.redirect("http://localhost:9000/dashboard")
 	} catch (error) {
 		res.status(500).send("Github authentication Failed, Try again!")
 		console.log(error)

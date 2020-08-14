@@ -22,13 +22,14 @@ const githubAuth = async (req, res, next) => {
 
 		const userGithub = await axios.get("https://api.github.com/user", {
 			headers: {
-				Authorization: "token " + accessToken,
+				Authorization: "Bearer " + accessToken,
 				accept: "application/json",
 			},
 		})
 		req.user = userGithub
 	} catch (error) {
-		throw error
+		console.log(error)
+		return res.send("Github Login failed, Try Again!")
 	}
 	next() // call the route
 }

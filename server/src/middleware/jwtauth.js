@@ -10,7 +10,10 @@ const getToken = (id) => {
 const authenticate = async (req, res, next) => {
 	try {
 		const token = req.cookies["jwt"]
-
+		console.log("--- authencticate method : ", token)
+		if (!token) {
+			return res.status(404).send("Token not found, login")
+		}
 		const idObject = jwt.verify(token, process.env.JWT_SECRET)
 		req.userId = idObject.id
 		next()
