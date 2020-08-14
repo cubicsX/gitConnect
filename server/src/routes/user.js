@@ -8,16 +8,16 @@ const cookieParser = require("cookie-parser")
 const { authenticate, getToken } = require("../middleware/jwtauth")
 
 var db // store db object in this object
-database.connectDB(() => (db = database.getDb("users")))
+database.connectDB(() => (db = database.getDb("users"))) // get a user collection
 
-// it has now use now, the redirectURL will be embedded in client side,
+//this path is not needed, delete it before deployment
 router.get("/login", (req, res) => {
 	res.redirect(redirectURL)
 })
 
 router.get("/github", githubAuth, async (req, res) => {
 	//we will get user data in req.user.data
-
+	return res.send(req.user.data)
 	//check if user exists
 	try {
 		let userId = await db.findOne(

@@ -1,6 +1,7 @@
 const axios = require("axios")
 
 const redirectURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}`
+
 const githubAuth = async (req, res, next) => {
 	// url to get a user data, we get a code from /login url, which we will send in this url to github api with our github credentials
 	try {
@@ -21,7 +22,7 @@ const githubAuth = async (req, res, next) => {
 
 		const userGithub = await axios.get("https://api.github.com/user", {
 			headers: {
-				Authorization: "Bearer " + accessToken,
+				Authorization: "token " + accessToken,
 				accept: "application/json",
 			},
 		})

@@ -10,6 +10,7 @@ const getToken = (id) => {
 const authenticate = async (req, res, next) => {
 	try {
 		const token = req.cookies["jwt"]
+
 		const idObject = jwt.verify(token, process.env.JWT_SECRET)
 		req.userId = idObject.id
 		next()
