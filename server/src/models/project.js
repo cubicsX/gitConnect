@@ -24,11 +24,10 @@ const projectModel = {
 	status: { type: "string", enum: ["active", "ongoing", "hide"] },
 	tags: { type: "array", items: { type: "string", maxLength: 40 } },
 	skillsRequired: { type: "array", items: { type: "string", maxLength: 40 } },
-	collaboratorCount: { type: "int" },
 }
 
-const validateProject = ajv.compile(projectModel)
+const validate = ajv.compile(projectModel)
 
 module.exports = {
-	validateProject,
+	validate,
 }
