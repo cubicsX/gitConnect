@@ -1,7 +1,7 @@
 const Ajv = require("ajv")
 const ajv = new Ajv({ allErrors: true })
 
-const collaboratorModel = {
+const developerModel = {
 	type: "object",
 	required: ["projectId", "username", "authority", "role", "status"],
 	additionalProperties: false,
@@ -9,7 +9,10 @@ const collaboratorModel = {
 	properties: {
 		projectId: { type: "string" },
 		username: { type: "string" },
-		authority: { type: "string", enum: ["owner", "collaborator"] },
+		authority: {
+			type: "string",
+			enum: ["owner", "collaborator", "developer"],
+		},
 		role: { type: "array", items: { type: "string", maxLength: 40 } },
 		status: { type: "string", enum: ["accepted", "pending", "rejected"] },
 		comments: {
@@ -25,8 +28,8 @@ const collaboratorModel = {
 	},
 }
 
-const validateCollaborator = ajv.compile(collaboratorModel)
+const validateDeveloper = ajv.compile(developerModel)
 
 module.exports = {
-	validateCollaborator,
+	validateDeveloper,
 }

@@ -26,7 +26,8 @@ const connectDB = (callback) => {
 }
 // pass the collection you want in db
 const getDb = (coll) => {
-	return db.collection(coll)
+	if (coll) return db.collection(coll)
+	else return db
 }
 module.exports = {
 	connectDB,

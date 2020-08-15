@@ -16,8 +16,12 @@ app.get("/", function (req, res) {
 })
 
 app.get("/dashboard", auth.authenticate, function (req, res) {
-	console.log("/dashboard", req.cookies)
 	res.sendFile(path.join(__dirname, "build", "index.html"))
+})
+
+app.get("/test", (req, res) => {
+	console.log(req.cookies)
+	res.send("Done")
 })
 
 // MANAGE ALL INVALID ROUTER IN invalid.js ROUTES FILE

@@ -2,7 +2,7 @@ const router = require("express").Router()
 const axios = require("axios")
 const { redirectURL, githubAuth } = require("../middleware/githubAuth")
 const database = require("../database/db")
-const cookieParser = require("cookie-parser")
+const User = require("../models/user")
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
 const { authenticate, getToken } = require("../middleware/jwtauth")
@@ -20,7 +20,7 @@ router.get("/github", githubAuth, async (req, res) => {
 	//check if user exists
 	try {
 		let userId = await db.findOne(
-			{ email: req.user.data.email },
+			{ username: req.user.data.login },
 			{ projection: { _id: 1 } }
 		)
 		//if user does not exist, create a new user
@@ -36,11 +36,44 @@ router.get("/github", githubAuth, async (req, res) => {
 			userId = user.insertedId
 		}
 		const token = getToken(userId)
-		res.cookie("jwt", token, { path: "/", httpOnly: true, SameSite: true })
-		res.status(302).redirect("/dashboard")
+		res.cookie("jwt", token, {
+			path: "/",
+			httpOnly: true,
+			SameSite: true,
+		})
+		res.redirect("/dashboard")
 	} catch (error) {
-		res.status(500).send("Github authentication Failed, Try again!")
+		res.status(500).send("Github authentication Failed, Try again!") //-------- redirect user
 		console.log(error)
+	}
+})
+
+router.get("/logout", (req, res) => {
+	res.clearCookie("jwt")
+	res.send("You are logged out perfectly") // ------- redirect user here
+})
+
+// to get user details
+router.get("/profile", authenticate, async (req, res) => {
+	const user = await db.findOne(
+		{ _id: req.userId },
+		{ projection: { _id: 0 } }
+	)
+	res.send(user)
+})
+
+//to update user details
+router.put("/profile", authenticate, async (req, res) => {
+	const user = req.body
+	User.validate(user)
+	if (User.validate.errors) return res.status(400).send("Invalid Data")
+
+	try {
+		await db.updateOne({ _id: req.userId }, { $set: user })
+		return res.status(200).send(true)
+	} catch (error) {
+		console.log(error)
+		res.status(400).send("Try Again!")
 	}
 })
 

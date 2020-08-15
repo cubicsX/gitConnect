@@ -3,22 +3,22 @@
 
 FINAL STRUCTURE
 
-Collaborators : [
+Developer : [ 
 {
 	“projectId” : id,
-	userId: id,
+	userId: userObjectID,
 	‘authority’  :   ‘owner’/ ‘collaborators’,
 	'role' : [ ] // because when user will send request, he has to tell which role he is applying for.
-
+	
 	'status' : string
 		'accepted' // he is accepted            ( show only accepted users in project desc page )
-		'pending'  // user not accepted yet,
-		'rejected' // user is rejected
-
+		'pending'  // user not accepted yet, 
+		'rejected' // user is rejected 
+		
     ‘comments’ :  [
+{
 		"username": //person who commented
-        “comment”: string
-	],
+        		“comment”: string
 }
 ]
 
@@ -30,6 +30,8 @@ User = {
     “githubProfile”:<string> req.user.data.html_url, -- link to user profile on github
     “avatar”:<string-photo-link> req.user.data.avatar_url, --Profile picture on github url
     “skills”: [ nodejs, python etc.. ] -- skills user has,
+    “linkedInProfile”: <string> -- link to linkedIn profile,
+    “bookmarks”: <string> -- projectId of bookmarked projects.
 }
 
 Project = {
@@ -37,7 +39,7 @@ Project = {
     “title” : Title of the Project,
     “shortDesc” : Short description about the Project,
     “githubRepo”: GitHub link to that project,
-    “postDate”: When project posted out website
+    “postDate”: When project posted on website
 
     “status” (string) : Status of the project {
    	active - still need more collaboratore, ( shown in the search results )
@@ -47,8 +49,8 @@ Project = {
     }
     tags: [ python, android, social-media etc.. ] //tags for searching the project
     skillsRequired: [ android, node, python, ML etc..] //required skills for the project.
-    collaboratorCount: int, //number of active collaborators
 }
+
 
 -----FUTURE CHANGES----------
 user location ( only City, Country )

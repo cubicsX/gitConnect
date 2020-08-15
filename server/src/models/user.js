@@ -1,5 +1,12 @@
 const Ajv = require("ajv")
-const ajv = new Ajv({ allErrors: true })
+const database = require("../database/db")
+
+var db // store db object in this object
+database.connectDB(() => (db = database.getDb("users"))) // get a user collection
+
+const ajv = new Ajv({
+	allErrors: true,
+})
 
 // user model
 const userModel = {
@@ -8,18 +15,43 @@ const userModel = {
 	additionalProperties: false,
 
 	properties: {
-		name: { type: "string", maxLength: 40 },
-		username: { type: "string", maxLength: 40 },
-		email: { type: "string", format: "email" },
-		githubProfile: { type: "string", format: "url" },
-		avatar: { type: "string", format: "url" },
-		skills: { type: "array", items: { type: "string", maxLength: 40 } },
+		name: { title: "Full Name ", type: "string", maxLength: 40 },
+		username: { title: "Username", type: "string", maxLength: 40 },
+		email: { title: "Email", type: "string", format: "email" },
+		githubProfile: {
+			title: "Github Profile",
+			type: "string",
+			format: "url",
+		},
+		linkedInProfile: {
+			title: "LinkedIn Profile",
+			type: "string",
+			format: "url",
+		},
+		avatar: { title: "Avatar", type: "string", format: "url" },
+		skills: {
+			title: "Skills",
+			type: "array",
+			items: { type: "string", maxLength: 40 },
+		},
+		bookmarks: {
+			title: "Bookmarks",
+			type: "array",
+			items: { type: "string", maxLength: 40 },
+		},
 	},
 }
 
-const validateUser = ajv.compile(userModel)
-console.log(validateUser({}), validateUser.errors)
+//user validation model
+const validate = ajv.compile(userModel)
 
-module.exports = {
-	validateUser,
+const getUser = async (userId) => {
+	return await db.findOne({ _id: userId })
 }
+
+const getUserProjects = async (userId) => {
+	const devDb = getDb("developers")
+	return await devDb.findMany({ _id: userId })
+}
+
+module.exports = { validate }

@@ -4,6 +4,8 @@ const redirectURL = `https://github.com/login/oauth/authorize?client_id=${proces
 
 const githubAuth = async (req, res, next) => {
 	// url to get a user data, we get a code from /login url, which we will send in this url to github api with our github credentials
+	const userCode = req.query.code
+	if (!userCode) return res.status(404).send("Not Found")
 	try {
 		const resGithub = await axios.post(
 			`https://github.com/login/oauth/access_token`,
@@ -11,7 +13,7 @@ const githubAuth = async (req, res, next) => {
 				// apis and user token passsed to request
 				client_id: process.env.GITHUB_CLIENT_ID,
 				client_secret: process.env.GITHUB_CLIENT_SECRET,
-				code: req.query.code,
+				code: userCode,
 			},
 			{
 				//options object to pass addtional requirements, here, we accept json
