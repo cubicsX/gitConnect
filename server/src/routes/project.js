@@ -45,6 +45,7 @@ router.post("/addproject", authenticate, async (req, res) => {
 	const projectData = req.body.projectData
 	projectData.postDate = new Date()
 
+	console.log(req.userId)
 	projectData.developer = {
 		userId: req.userId,
 		authority: "owner",

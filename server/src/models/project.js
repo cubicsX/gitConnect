@@ -1,38 +1,11 @@
 const Ajv = require("ajv")
 const ajv = new Ajv({ allErrors: true })
 
-//developer Model
-const developerModel = {
-	type: "object",
-	required: ["projectId", "userId", "authority", "role", "status"],
-	additionalProperties: false,
-
-	properties: {
-		userId: { type: "string" },
-		authority: {
-			type: "string",
-			enum: ["owner", "collaborator", "developer"],
-		},
-		role: { type: "array", items: { type: "string", maxLength: 40 } },
-		status: { type: "string", enum: ["accepted", "pending", "rejected"] },
-		comments: {
-			type: "array",
-			itemes: {
-				type: "object",
-				properties: {
-					username: { type: "string" },
-					comment: { type: "string" },
-				},
-			},
-		},
-	},
-}
-
 //project model
 const projectModel = {
 	type: "object",
 	required: [
-		"title",
+		"projectTitle",
 		"shortDesc",
 		"githubRepo",
 		"postDate",
@@ -42,15 +15,52 @@ const projectModel = {
 	],
 	additionalProperties: false,
 
-	projectTitle: { type: "string", maxLength: 60 },
-	shortDesc: { type: "string", maxLength: 200 },
-	githubRepo: { type: "string", format: "url" },
-	postDate: { type: "string", format: "date" },
+	properties: {
+		projectTitle: { type: "string", maxLength: 60 },
+		shortDesc: { type: "string", maxLength: 200 },
+		githubRepo: { type: "string", format: "url" },
+		postDate: { type: "object" },
 
-	status: { type: "string", enum: ["active", "ongoing", "hide"] },
-	tags: { type: "array", items: { type: "string", maxLength: 40 } },
-	skillsRequired: { type: "array", items: { type: "string", maxLength: 40 } },
-	developer: developerModel,
+		status: { type: "string", enum: ["active", "ongoing", "hide"] },
+		tags: { type: "array", items: { type: "string", maxLength: 40 } },
+		skillsRequired: {
+			type: "array",
+			items: { type: "string", maxLength: 40 },
+		},
+
+		// developer model
+		developer: {
+			type: "object",
+			required: ["userId", "authority", "role", "status"],
+			additionalProperties: false,
+
+			properties: {
+				userId: { type: "object" },
+				authority: {
+					type: "string",
+					enum: ["owner", "collaborator", "developer"],
+				},
+				role: {
+					type: "string",
+					maxLength: 40,
+				},
+				status: {
+					type: "string",
+					enum: ["accepted", "pending", "rejected"],
+				},
+				comments: {
+					type: "array",
+					itemes: {
+						type: "object",
+						properties: {
+							username: { type: "string" },
+							comment: { type: "string" },
+						},
+					},
+				},
+			},
+		},
+	},
 }
 
 const validate = ajv.compile(projectModel)
