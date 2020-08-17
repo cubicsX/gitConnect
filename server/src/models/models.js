@@ -3,26 +3,6 @@
 
 FINAL STRUCTURE
 
-Developer : [ 
-{
-	“projectId” : id,
-	userId: userObjectID,
-	‘authority’  :   ‘owner’/ ‘collaborators’,
-	'role' : [ ] // because when user will send request, he has to tell which role he is applying for.
-	
-	'status' : string
-		'accepted' // he is accepted            ( show only accepted users in project desc page )
-		'pending'  // user not accepted yet, 
-		'rejected' // user is rejected 
-		
-    ‘comments’ :  [
-{
-		"username": //person who commented
-        		“comment”: string
-}
-]
-
-
 User = {
     “name” :<string>req.user.data.name, -- you know this
     "username”:<string> req.user.data.login, -- username on github
@@ -49,6 +29,24 @@ Project = {
     }
     tags: [ python, android, social-media etc.. ] //tags for searching the project
     skillsRequired: [ android, node, python, ML etc..] //required skills for the project.
+
+    developer : [ 
+    {
+        userId: userObjectID,
+        ‘authority’  :   ‘owner’/ ‘collaborators’,
+        'role' : [ ] // because when user will send request, he has to tell which role he is applying for.
+        
+        'status' : string
+            'accepted' // he is accepted            ( show only accepted users in project desc page )
+            'pending'  // user not accepted yet, 
+            'rejected' // user is rejected 
+            
+        ‘comments’ :  [
+    {
+            "username": //person who commented
+                    “comment”: string
+    }
+]
 }
 
 
