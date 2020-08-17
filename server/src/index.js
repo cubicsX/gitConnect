@@ -4,18 +4,25 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const auth = require("./middleware/jwtauth")
 const userRouter = require("./routes/user")
+const cors = require('cors')
 
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
-
 app.use("/api/user", userRouter)
 app.use(express.static(path.join(__dirname, "build")))
+// app.get('/' , auth.authenticate,function(req,res){
+// 	res.redirect('http://localhost:3000/')
+// })
 app.get("/", function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
 
-app.get("/dashboard", auth.authenticate, function (req, res) {
+ app.get("/dashboard", auth.authenticate, function (req, res) {
+	res.sendFile(path.join(__dirname, "build", "index.html"))
+})
+app.get("/newidea", auth.authenticate, function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
 

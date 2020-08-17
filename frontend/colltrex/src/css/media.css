@@ -1,4 +1,4 @@
-==
+
 @media only screen and (min-width: 769px) and (max-width: 10000px) {
 	#mobile_sec .menumobile { display: block!important; }
 }
@@ -61,9 +61,6 @@
 
 	.Contact_sec { width: 100%; }
 	.Contact_sec .Center { width: 100%; padding: 70px 2%;}
-	
-	.Contact_sec .Map { width: 100%;}
-	.Contact_sec .Map img { height: 300px; width: 100%; }
 	
 	.Get_sec { width: 100%; }
 	.Get_sec .Mid { width: 100%; padding: 50px 2%; }
@@ -147,8 +144,6 @@
 	.Contact_sec h2 { font-size: 40px; line-height: 40px; }
 	.Contact_sec p { padding: 15px 0px; font-size: 13px; }
 
-	.Contact_sec .Map { width: 100%;}
-	.Contact_sec .Map img { height: 250px; width: 100%; }
 	
 	.Get_sec { width: 100%; }
 	.Get_sec .Mid { width: 100%; padding: 50px 2%; }
@@ -238,8 +233,6 @@
 	.Contact_sec h2 { font-size: 30px; line-height: 30px; }
 	.Contact_sec p { padding: 15px 0px; font-size: 13px; }
 
-	.Contact_sec .Map { width: 100%;}
-	.Contact_sec .Map img { height: 200px; width: 100%; }
 	
 	.Get_sec { width: 100%; }
 	.Get_sec .Mid { width: 100%; padding: 30px 3%; }
@@ -308,9 +301,6 @@
 
 	.About_sec,
 	.Services_sec,
-	.Pricing_sec { 
-		width: 100%; padding: 60px 0px 30px; 
-	}
 	.About_sec .Center { width: 100%; padding: 0px 3%; }
 	.About_sec h2 { font-size: 30px; line-height: 30px; }
 	.About_sec p { padding: 15px 0px; font-size: 13px; }
@@ -337,9 +327,6 @@
 	.Contact_sec .Center { width: 100%; padding: 60px 3% 30px;}
 	.Contact_sec h2 { font-size: 30px; line-height: 30px; }
 	.Contact_sec p { padding: 15px 0px; font-size: 13px; }
-
-	.Contact_sec .Map { width: 100%;}
-	.Contact_sec .Map img { height: 200px; width: 100%; }
 	
 	.Get_sec { width: 100%; }
 	.Get_sec .Mid { width: 100%; padding: 30px 4%; }

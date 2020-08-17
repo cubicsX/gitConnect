@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './Display.css';
 import './css/theme.css';
 import './css/media.css';
 import './css/font-awesome.min.css';
@@ -12,32 +11,8 @@ class login extends Component {
         super(props)
         this.state = {
             islogged: true,
-            loadedstatus:'unloaded',
-            headersize:"large",
-            isMobile:false,
         }
         this.handleloginstatus = this.handleloginstatus.bind(this)
-    }
-    listenScrollEvent =(event)=>{
-        this.setState({
-            headersize:"smaller" ,
-        })
-        if (window.pageYOffset === 0){
-            this.setState({
-                headersize:"large"
-            })
-        }
-    }
-    componentDidMount(){
-        this.setState({
-            loadedstatus:'loaded',
-        })
-        window.addEventListener('resize', () => {
-            this.setState({
-                isMobile: window.innerWidth < 1200
-            });
-        }, false);
-        window.addEventListener('scroll', this.listenScrollEvent)
     }
     handleloginstatus = (event) => {
         window.open(`https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}`, "_self")
@@ -48,42 +23,9 @@ class login extends Component {
             {url:require("./img/Slider-img2.png")}
         ]
         return (
-            <div className={this.state.loadedstatus}>           
+            <div className="login-header">           
             <div class="DesignHolder">
-	            <div class="LayoutFrame">
-            <header className={this.state.headersize}>
-            <div class="Center">
-                <div class="site-logo">
-                	<h1><a href="#">Git<span>C</span>onnect</a></h1>
-                </div>
-               <div id={this.state.isMobile ? 'mobile_sec' :''}>
-               <div class={this.state.isMobile ?"mobile":''}><i className={this.state.isMobile ?"fa fa-bars":''}></i><i className={this.state.isMobile ?"fa fa-times":''}></i></div>
-                <div class={this.state.isMobile ?"menumobile":''}>
-                    <nav class="Navigation">
-                        <ul>
-                            <li class="active">                                
-                                <a href="#home">Home</a>
-                                <span class="menu-item-bg"></span>
-                            </li>
-                            <li>
-                                <a href="#about">About</a>
-                                <span class="menu-item-bg"></span>
-                            </li>
-                            <li>
-                                <a href="#services">Services</a>
-                                <span class="menu-item-bg"></span>
-                            </li>
-                            <li>
-                                <a href="#contact">Contact</a>
-                                <span class="menu-item-bg"></span>
-                            </li>
-                        </ul>
-                    </nav>
-				</div>
-				</div>
-                <div class="clear"></div>
-            </div>
-        </header>
+	        <div class="LayoutFrame">
         <div class="Banner_sec" id="home">
 
             <div class="bannerside">

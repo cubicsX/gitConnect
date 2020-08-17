@@ -23,6 +23,31 @@ router.get("/:projectId", async (req, res) => {
 		res.status(404).send("No Project found with this id")
 	}
 })
+router.post("/addproject", authenticate, async (req, res) => {
+	console.log(req.body)
+	const projectData = req.body.projectData
+	projectData.postDate = new Date()
+
+	projectData.developer = {
+		userId: req.userId,
+		authority: "owner",
+		role: "empty",
+		status: "accepted",
+	}
+	console.log(projectData)
+
+	if (Project.validate(projectData)) {
+		try {
+			await projectDb.insertOne(projectData)
+			return res.send("Project Added")
+		} catch (err) {
+			console.log(err)
+			return res.status(500).send("Try Again!")
+		}
+	}
+	console.log(Project.validate.errors)
+	res.status(400).send("Invalid Data")
+})
 
 
 module.exports = router

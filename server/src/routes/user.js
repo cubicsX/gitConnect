@@ -54,7 +54,7 @@ router.get("/logout", (req, res) => {
 })
 
 // to get user details
-router.get("/profile", authenticate, async (req, res) => {
+router.post("/profile", authenticate, async (req, res) => {
 	const user = await db.findOne(
 		{ _id: req.userId },
 		{ projection: { _id: 0 } }
@@ -76,5 +76,6 @@ router.put("/profile", authenticate, async (req, res) => {
 		res.status(400).send("Try Again!")
 	}
 })
+
 
 module.exports = router
