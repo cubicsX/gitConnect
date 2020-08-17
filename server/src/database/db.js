@@ -6,10 +6,16 @@ const MongoClient = require("mongodb").MongoClient
 //because .connect is callback based method. it will only return db in callback, so to use db in other methods/files,
 // we need to provide synchonized access to db object. Other files will call connectDb, in that method, they will call
 //getDb to get the Db object.
-var db
+var database,
+	isReq = false
+count = 1
 
-const connectDB = (callback) => {
-	if (db) return callback()
+connectDB(() => console.log("Database Connected"))
+
+async function connectDB(callback) {
+	if (database) return callback()
+	if (isReq) await sleep(5000).then(() => callback())
+	isReq = true
 	MongoClient.connect(
 		process.env.MONGODB,
 		{
@@ -18,17 +24,29 @@ const connectDB = (callback) => {
 		},
 		(err, dbase) => {
 			if (err) return console.log(err)
-			db = dbase.db("gitconnect") // store it in db, so we can access it elsewhere
-			console.log("Database Connected")
+			database = dbase.db("gitconnect") // store it in db, so we can access it elsewhere
+			database.count = count++
 			callback()
 		}
 	)
 }
 // pass the collection you want in db
 const getDb = (coll) => {
-	if (coll) return db.collection(coll)
-	else return db
+	if (database) {
+		if (coll) return database.collection(coll)
+		else return database
+	}
+	// sleep(5000).then(() => {
+	// 	return getDb(coll)
+	// })
 }
+
+function sleep(ms) {
+	return new Promise((resolve, reject) => {
+		setTimeout(resolve, ms)
+	})
+}
+
 module.exports = {
 	connectDB,
 	getDb,

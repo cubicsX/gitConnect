@@ -1,8 +1,4 @@
 const Ajv = require("ajv")
-const database = require("../database/db")
-
-var db // store db object in this object
-database.connectDB(() => (db = database.getDb("users"))) // get a user collection
 
 const ajv = new Ajv({
 	allErrors: true,
@@ -44,14 +40,5 @@ const userModel = {
 
 //user validation model
 const validate = ajv.compile(userModel)
-
-const getUser = async (userId) => {
-	return await db.findOne({ _id: userId })
-}
-
-const getUserProjects = async (userId) => {
-	const devDb = getDb("developers")
-	return await devDb.findMany({ _id: userId })
-}
 
 module.exports = { validate }

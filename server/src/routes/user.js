@@ -7,8 +7,8 @@ const User = require("../models/user")
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
 const { authenticate, getToken } = require("../middleware/jwtauth")
 
-var db // store db object in this object
-database.connectDB(() => (db = database.getDb("users"))) // get a user collection
+var userDb // store db object in this object
+database.connectDB(() => (userDb = database.getDb("user")))
 
 //this path is not needed, delete it before deployment
 router.get("/login", (req, res) => {
@@ -19,7 +19,7 @@ router.get("/github", githubAuth, async (req, res) => {
 	//we will get user data in req.user.data
 	//check if user exists
 	try {
-		let userId = await db.findOne(
+		let userId = await userDb.findOne(
 			{ username: req.user.data.login },
 			{ projection: { _id: 1 } }
 		)
@@ -32,7 +32,7 @@ router.get("/github", githubAuth, async (req, res) => {
 				githubProfile: req.user.data.html_url,
 				avatar: req.user.data.avatar_url,
 			}
-			user = await db.insertOne(user)
+			user = await userDb.insertOne(user)
 			userId = user.insertedId
 		}
 		const token = getToken(userId)
@@ -55,11 +55,16 @@ router.get("/logout", (req, res) => {
 
 // to get user details
 router.post("/profile", authenticate, async (req, res) => {
-	const user = await db.findOne(
-		{ _id: req.userId },
-		{ projection: { _id: 0 } }
-	)
-	res.send(user)
+	try {
+		const user = await userDb.findOne(
+			{ _id: req.userId },
+			{ projection: { _id: 0 } }
+		)
+		res.send(user)
+	} catch (error) {
+		res.status(400).status("User Not Found")
+		console.log(error)
+	}
 })
 
 //to update user details
@@ -69,7 +74,7 @@ router.put("/profile", authenticate, async (req, res) => {
 	if (User.validate.errors) return res.status(400).send("Invalid Data")
 
 	try {
-		await db.updateOne({ _id: req.userId }, { $set: user })
+		await userDb.updateOne({ _id: req.userId }, { $set: user })
 		return res.status(200).send(true)
 	} catch (error) {
 		console.log(error)
