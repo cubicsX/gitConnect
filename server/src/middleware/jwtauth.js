@@ -10,11 +10,10 @@ const getToken = (id) => {
 const authenticate = async (req, res, next) => {
 	try {
 		const token = req.cookies["jwt"]
-		console.log(token)
 		if (!token)
 			return res.status(404).send("Please Login, redirect to Login page")
 		const idObject = jwt.verify(token, process.env.JWT_SECRET) // no need to verify object, becuase it will throw error if failed
-		req.userId = new ObjectId(idObject.id._id)
+		req.userId = idObject.id
 		next()
 	} catch (error) {
 		console.log(error)

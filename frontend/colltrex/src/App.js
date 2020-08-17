@@ -82,6 +82,10 @@ class App extends Component {
                           <span class="menu-item-bg"></span>
                         </li>
                         <li>
+                          <a href="/dashboard">Dashboard</a>
+                          <span class="menu-item-bg"></span>
+                        </li>
+                        <li>
                           <a href="/newidea">New Idea</a>
                           <span class="menu-item-bg"></span>
                         </li>

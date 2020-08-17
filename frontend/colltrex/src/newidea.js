@@ -82,20 +82,23 @@ class newidea extends Component {
            githubRepo:this.state.newgiturl,
            status:this.state.status,
            tags:this.state.Tags,
-           skillsRequired:this.state.Skills
+           skillsRequired:this.state.Skills,
+           postDate:new Date()
        }
         let server = axios.create({
             baseURL:'http://localhost:9000/api',
           })
-        server.post('/user/addproject',projectData)
+        console.log(server.post('/project/addproject',projectData)
         .then((res)=>{
-            console.log(res)
-        })
+            if (res.status ==200) {
+                alert('Success')
+            }
+       })
         .catch(err=>{
             window.alert(err)
-        })
+        }))
         
-    }
+        }
     resetDetails = ()=>{
     }
     render() {
