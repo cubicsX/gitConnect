@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import Skilltable from './Skill_table';
 import SkillForm from './Skill_Form';
 import axios from 'axios';
+import './profile.css'
 class general_profile extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            user_id:this.props.univ_userid,
             Skills: [],
             avatra_imgsrc: '',
             editprofilestate: false,
             linkedin: '',
-            user:[]
-
+            user: []
         }
         this.editprofile = this.editprofile.bind(this);
         this.removeSkill = this.removeSkill.bind(this);
@@ -20,15 +19,22 @@ class general_profile extends Component {
         this.savedetails = this.savedetails.bind(this);
         this.discardchanges = this.discardchanges.bind(this);
     }
-    componentDidMount(){
-        axios.post('/getuser',{user_id:this.state.user_id})
-        .then(res=>{
-            if (res.status ==='success'){
-                //userdata object
-            }   
+    componentDidMount() {
+        const t = this;
+        let server = axios.create({
+            baseURL: 'http://localhost:9000/api',
         })
-        this.state.user[0].map((skill_val)=>
-            this.state.Skills.push({skill:skill_val})
+        server.get('/user/profile')
+            .then((res) => {
+                t.setState({
+                    user: res.data
+                })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        this.state.user.map((skill_val) =>
+            this.state.Skills.push({ skill: skill_val })
         )
     }
     handlelinkedin = event => {
@@ -95,6 +101,7 @@ class general_profile extends Component {
                     <button onClick={this.savedetails}>Save Details</button>
                     <button onClick={this.discardchanges}>Discard Changes</button>
                     <button onClick={this.editprofile}>Close</button>
+
                 </>
             )
 
@@ -104,29 +111,72 @@ class general_profile extends Component {
             comp_render =
                 (
                     <>
-                        <h1>General Details</h1>
-                        <img src={this.state.user[0].avatar} alt="github_avatar" />
-                        <h2>Name:</h2>&lt;{this.state.user[0].name}&gt;<br />
-                        <h2>username:</h2>&lt;{this.state.user[0].username}&gt;<br />
-                        <h2>email ID:</h2>&lt;{this.state.user[0].email}&gt;<br />
-                        <h2>github Profile:</h2>&lt;{this.state.user[0].githubProfile}&gt;<br />
-                        <h2>linked_in Profile:</h2>&lt;{this.state.user[0].linkedInProfile}&gt;<br />
-                        <h2>Skills</h2>
-                        <ul>
-                            {this.state.Skills.map((skval, index) =>
-                                <li key={index}>
-                                    {skval.skill}
-                                </li>
-                            )}
-                        </ul>
-                        <button onClick={this.editprofile}>Edit Profile</button>
+                        <div class="gen_body">
+                            <div class="profile-main">
+                                <div class="profile-header">
+                                    <div class="user-detail">
+                                        <div class="user-image">
+                                            <img src={this.state.user[0].avatar} alt="github_avatar" />
+                                        </div>
+                                        <div class="user-data">
+                                            <h2>{this.state.user[0].name}</h2>
+                                            <p><span class="post-label">{this.state.user[0].linkedInProfile}</span></p>
+                                            <p><span class="post-label"> {this.state.user[0].githubProfile} </span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-panel-main">
+                                    <ul class="tabs">
+                                        <li class="tab-link current" data-tab="Basic-detail">Profile</li>
+                                        <li class="tab-link current" data-tab="Edit-profile"><button2 onClick={this.editprofile} class="button2"> <a href="">Edit Profile</a></button2></li>
+                                    </ul>
+                                    <div id="Basic-detail" class="tab-content current">
+                                        <div class="skill-box">
+                                            <ul>
+                                                <li><strong>My Core Skills:</strong></li>
+                                                {this.state.user[0].skills.map((skval, index) =>
+                                                    <li key={index}>
+                                                        {skval.skill}
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                        <div class="bio-box">
+                                            <div class="heading">
+                                                <p>Professional Bio
+							                <label>{this.state.user[0].githubProjects} project</label></p>
+                                            </div>
+                                            <div class="desc">
+                                                ore et dolore magna aliqua. Ut enim ad minim veniam,
+                                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
+						                </div>
+                                        </div>
+                                        <div class="detail-box">
+                                                <p>Bookmarks of project</p>
+                                                <ul class="ul-first">
+                                                    {this.state.user[0].bookmarks.map((skval, index) =>
+                                                        <li>
+                                                            <button key={index}>
+                                                                {skval.bookmark}
+                                                            </button>
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
                     </>
                 )
         }
         return (
-            <div className="General-Profile">
+            <>
                 {comp_render}
-            </div>
+            </>
         )
     }
 }

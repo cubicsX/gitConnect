@@ -31,6 +31,9 @@ router.get("/github", githubAuth, async (req, res) => {
 				email: req.user.data.email,
 				githubProfile: req.user.data.html_url,
 				avatar: req.user.data.avatar_url,
+				linkedInProfile: null,
+				skills: [],
+				bookmarks: [],
 			}
 			user = await userDb.insertOne(user)
 			userId = user.insertedId
@@ -81,6 +84,40 @@ router.put("/profile", authenticate, async (req, res) => {
 		res.status(400).send("Try Again!")
 	}
 })
-
+router.get("/profile", authenticate, async (req, res) => {
+	try {
+		const user = await userDb.findOne(
+			{ _id: req.userId },
+			{ projection: { _id: 0 } }
+		)
+		res.send(user)
+	} catch (error) {
+		res.status(400).status("User Not Found")
+		console.log(error)
+	}
+})
+router.post("/addbookmark", authenticate, async (req, res) => {
+	const projectId = req.bookmark_data.projectId
+	const projectTitle = req.body.bookmark_data.projectTitle
+	console.log(req.body)
+	console.log(req.userId)
+	try {
+		const result = await userDb.updateOne(
+			{ _id: req.userId },
+			{
+				$push: {
+					bookmarks: {
+						projectId: projectId,
+						projectTitle: projectTitle,
+					},
+				},
+			}
+		)
+		res.send("Added Bookmark")
+	} catch (err) {
+		console.log(err)
+		res.status(400).send("Try again")
+	}
+})
 
 module.exports = router

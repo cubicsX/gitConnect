@@ -90,7 +90,7 @@ class newidea extends Component {
           })
         console.log(server.post('/project/addproject',projectData)
         .then((res)=>{
-            if (res.status ==200) {
+            if (res.status ===200) {
                 alert('Success')
             }
        })
@@ -131,5 +131,4 @@ class newidea extends Component {
         )
     }
 }
-
 export default newidea

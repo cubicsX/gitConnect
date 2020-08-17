@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken")
-const ObjectId = require("mongodb").ObjectID
+const ObjectID = require("mongodb").ObjectID
 
 const getToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -13,7 +13,7 @@ const authenticate = async (req, res, next) => {
 		if (!token)
 			return res.status(404).send("Please Login, redirect to Login page")
 		const idObject = jwt.verify(token, process.env.JWT_SECRET) // no need to verify object, becuase it will throw error if failed
-		req.userId = idObject.id
+		req.userId = new ObjectID(idObject.id._id)
 		next()
 	} catch (error) {
 		console.log(error)

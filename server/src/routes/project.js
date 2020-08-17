@@ -3,13 +3,13 @@ const axios = require("axios")
 const { redirectURL, githubAuth } = require("../middleware/githubAuth")
 const database = require("../database/db")
 const Project = require("../models/project")
+const ObjectID = require("mongodb").ObjectID
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
 const { authenticate} = require("../middleware/jwtauth")
 
 var projectDb // store db object in this object
 database.connectDB(() => (projectDb = database.getDb("project")))
-// database.connectDB(() => (projectDb = database.getDb("project"))) // get a user collection
 
 // get project details
 router.get("/:projectId", async (req, res) => {
@@ -26,8 +26,15 @@ router.get("/:projectId", async (req, res) => {
 	}
 })
 
-router.get("/get-projects/:userId", authenticate, async (req, res) => {
-	const userId = req.params.userId
+router.get("/get-projects/:username", authenticate, async (req, res) => {
+	const username = req.params.username
+	if (username) {
+		const userDb = getDb("user")
+		const userId = userDb.findOne(
+			{ username: username },
+			{ projectction: { _id: 1 } }
+		)
+	}
 	if (!userId) userId = req.userId
 	try {
 		const devDb = getDb("project")
@@ -65,4 +72,35 @@ router.post("/addproject", authenticate, async (req, res) => {
 	res.status(400).send("Invalid Data")
 })
 
+router.post("/search", async (req, res) => {
+	// add authenticate here
+	console.log(req.body)
+	let search = req.body.search
+	search = search.split(" ")
+
+	try {
+		let project = await projectDb
+			.find(
+				{
+					"skillsRequired.skill": { $in: search },
+				},
+				{
+					projection: {
+						developer: 0,
+					},
+				}
+			)
+			.toArray()
+
+		res.send(project)
+	} catch (err) {
+		console.log(err)
+		return res.status(400).send("Not Found")
+	}
+})
+
+// dev name and github url
+
 module.exports = router
+
+//titile, desc, github, tags, skills, status, postdate

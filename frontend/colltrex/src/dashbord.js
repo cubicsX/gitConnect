@@ -9,7 +9,6 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
-import { spacing } from '@material-ui/system';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -32,22 +31,18 @@ class dashbord extends Component {
             is_authenticated: true,//right know true but make it false onces in deploy
             is_username: '',
             project_list: [
-                {
-                    projectTitle: 'nma',
-                    shortDesc: 'nma',
-                    githubRepo: 'https://www.google.com/',
-                    status: 'active',
-                    tags: [{ tag: 'google' }, { tag: 'google' }, { tag: 'google' }],
-                    skillsRequired: [{ skill: 'kill' }, { skill: 'kill' }]
-                },
-                {
-                    projectTitle: 'nma',
-                    shortDesc: 'nma',
-                    githubRepo: 'https://www.google.com/',
-                    status: 'active',
-                    tags: [{ tag: 'google' }, { tag: 'google' }, { tag: 'google' }],
-                    skillsRequired: [{ skill: 'kill' }, { skill: 'kill' }]
-                }
+                {_id:"5f3a7be15a036f8d0c9021df",
+                projectTitle: "Test Project",
+                shortDesc: "Mahcine learning Porect",
+                githubRepo: "http://projectuser.com",
+                status: "active",
+                tags: [
+                    {
+                        "tag": "nothing"
+                    }
+                ],
+                skillsRequired: [{ "skill": "node" }, { "skill": "python" }, { "skill": "machine learning"}],
+            }
             ],
             searchtag: '',
             authority: 'collaborators',
@@ -56,19 +51,18 @@ class dashbord extends Component {
         this.handlesearch = this.handlesearch.bind(this);
         this.handlechange = this.handlechange.bind(this);
         this.makerequest = this.makerequest.bind(this);
+        this.bookmarks = this.bookmarks.bind(this);
     }
 
-    componentDidMount() {
-        this.props.userid(this.state.is_user_id, this.state.is_username)
-    }
     handlesearch = (event) => {
+        const t = this;
         let server = axios.create({
             baseURL: 'http://localhost:9000/api',
         })
         server.post('/project/search', { search: this.state.searchtag })
             .then((res) => {
-                console.log(res)
-                this.setState({
+                console.log(res);
+                t.setState({
                     project_list: res.data,
                 })
             })
@@ -83,12 +77,23 @@ class dashbord extends Component {
         })
     }
     makerequest = (event) => {
-        let data = { authority: this.state.authority, prjid: event.target.id }
+        //let data = { authority: this.state.authority, prjid: event.target.id }
         //make axious request for this data;
     }
+    bookmarks = (event) => {
+        let bookmark_data = { projectId: event.currentTarget.id, projectTitle: event.currentTarget.name }
+        let server = axios.create({
+            baseURL: 'http://localhost:9000/api',
+        })
+        server.post('/user/addbookmark', bookmark_data)
+            .then((res) => {
+                console.log(res);
+            })
+            .catch(err => {
+                window.alert(err)
+            })
+    }
     render() {
-
-
         return (
             <div mx="auto">
                 <input type='text'
@@ -126,7 +131,7 @@ class dashbord extends Component {
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="h2">
                                         <TableContainer component={Paper}>
-                                            <Table  aria-label="simple table">
+                                            <Table aria-label="simple table">
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell>REQUIRED SKILLS </TableCell>
@@ -134,13 +139,13 @@ class dashbord extends Component {
                                                     </TableRow>
                                                 </TableHead>
                                             </Table>
-                                        </TableContainer>                                        
+                                        </TableContainer>
                                     </Typography>
                                 </CardContent>
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="h2">
                                         <TableContainer component={Paper}>
-                                            <Table  aria-label="simple table">
+                                            <Table aria-label="simple table">
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell>Associated Tags</TableCell>
@@ -148,16 +153,19 @@ class dashbord extends Component {
                                                     </TableRow>
                                                 </TableHead>
                                             </Table>
-                                        </TableContainer>                                        
+                                        </TableContainer>
                                     </Typography>
                                 </CardContent>
                             </CardActionArea>
-                        <CardActions>
-                            <Button id  = {items._id} size="Large" color="primary">
-                                Make Request
+                            <CardActions>
+                                <Button onClick={this.makerequest} id={items._id} size="Large" color="primary">
+                                    Make Request
                             </Button>
-                        </CardActions>
-                    </Card>
+                                <Button onClick={this.bookmarks} id={items._id} name={items.projectTitle} size="Large" color="primary">
+                                    Bookmarks
+                            </Button>
+                            </CardActions>
+                        </Card>
                     ))}
             </div>
         )

@@ -22,10 +22,10 @@ const projectModel = {
 		postDate: { type: "object" },
 
 		status: { type: "string", enum: ["active", "ongoing", "hide"] },
-		tags: { type: "array", items: { type: "object"} },
+		tags: { type: "array", items: { type: "object" } },
 		skillsRequired: {
 			type: "array",
-			items: { type: "object"},
+			items: { type: "object" },
 		},
 
 		// developer model
