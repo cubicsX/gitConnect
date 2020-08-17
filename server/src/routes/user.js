@@ -6,6 +6,7 @@ const User = require("../models/user")
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
 const { authenticate, getToken } = require("../middleware/jwtauth")
+const user = require("../models/user")
 
 var userDb // store db object in this object
 database.connectDB(() => (userDb = database.getDb("user")))
@@ -25,13 +26,18 @@ router.get("/github", githubAuth, async (req, res) => {
 		)
 		//if user does not exist, create a new user
 		if (!userId) {
-			user = {
+			let user = {
 				name: req.user.data.name,
 				username: req.user.data.login,
 				email: req.user.data.email,
 				githubProfile: req.user.data.html_url,
 				avatar: req.user.data.avatar_url,
+				githubProjects: req.user.data.public_repos,
+				linkedInProfile: null,
+				skills: [],
+				bookmarks: [],
 			}
+
 			user = await userDb.insertOne(user)
 			userId = user.insertedId
 		}
@@ -70,8 +76,12 @@ router.get("/profile", authenticate, async (req, res) => {
 //to update user details
 router.put("/profile", authenticate, async (req, res) => {
 	const user = req.body
+	console.log(req.body)
 	User.validate(user)
-	if (User.validate.errors) return res.status(400).send("Invalid Data")
+	if (User.validate.errors) {
+		console.log(User.validate.errors)
+		return res.status(400).send("Invalid data. ")
+	}
 
 	try {
 		await userDb.updateOne({ _id: req.userId }, { $set: user })
@@ -79,6 +89,28 @@ router.put("/profile", authenticate, async (req, res) => {
 	} catch (error) {
 		console.log(error)
 		res.status(400).send("Try Again!")
+	}
+})
+
+router.post("/addbookmark", authenticate, async (req, res) => {
+	const projectId = req.body.projectId
+	const projectTitle = req.body.projectTitle
+	try {
+		const result = await userDb.updateOne(
+			{ _id: req.userId },
+			{
+				$push: {
+					bookmarks: {
+						projectId: projectId,
+						projectTitle: projectTitle,
+					},
+				},
+			}
+		)
+		res.send("Added Bookmark")
+	} catch (err) {
+		console.log(err)
+		res.status(400).send("Try again")
 	}
 })
 

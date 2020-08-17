@@ -34,8 +34,7 @@ router.get("/get-projects/:username", authenticate, async (req, res) => {
 			{ username: username },
 			{ projectction: { _id: 1 } }
 		)
-	}
-	if (!userId) userId = req.userId
+	} else userId = req.userId
 	try {
 		const devDb = getDb("project")
 		const projects = await devDb
