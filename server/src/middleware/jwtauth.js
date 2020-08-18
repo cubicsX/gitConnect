@@ -5,6 +5,7 @@ const getToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, {
 		expiresIn: 60 * 60 * 24 * 1,
 	})
+
 }
 const authenticate = async (req, res, next) => {
 	try {

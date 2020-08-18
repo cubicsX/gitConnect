@@ -6,7 +6,7 @@ const Project = require("../models/project")
 const ObjectID = require("mongodb").ObjectID
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
-const { authenticate, getToken } = require("../middleware/jwtauth")
+const { authenticate} = require("../middleware/jwtauth")
 
 var projectDb // store db object in this object
 database.connectDB(() => (projectDb = database.getDb("project")))

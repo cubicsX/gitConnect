@@ -60,7 +60,8 @@ router.get("/logout", (req, res) => {
 	res.send("You are logged out perfectly") // ------- redirect user here
 })
 
-// to get user details
+
+//to update user details
 router.get("/profile", authenticate, async (req, res) => {
 	try {
 		const user = await userDb.findOne(
@@ -87,12 +88,13 @@ router.put("/profile", authenticate, async (req, res) => {
 		)
 		return res.status(200).send(true)
 	} catch (error) {
+		res.status(400).status("User Not Found")
 		console.log(error)
-		res.status(400).send("Try Again!")
 	}
 })
 
 router.post("/addbookmark", authenticate, async (req, res) => {
+	console.log(req)
 	const projectId = req.body.projectId
 	const projectTitle = req.body.projectTitle
 	try {
