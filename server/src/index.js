@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
-
+app.use(express.static(path.join(__dirname, "build")))
 // route handlers
 app.use("/api/user", userRouter)
 app.use("/api/project", projectRouter)
@@ -32,7 +32,7 @@ app.get("/profile", auth.authenticate, function (req, res) {
 app.get("/edit_profile", auth.authenticate, function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
-app.get("/profiledisplay", auth.authenticate, function (req, res) {
+app.get("/projectdisplay", auth.authenticate, function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
 app.get("/test", (req, res) => {

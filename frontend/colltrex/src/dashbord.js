@@ -91,7 +91,7 @@ class dashbord extends Component {
         let server = axios.create({
             baseURL: 'http://localhost:9000/api',
         })
-        server.post('/user/addbookmark', {projectId: event.currentTarget.id})
+        server.post('/project/join-project', {projectId: event.currentTarget.id})
             .then((res) => {
                 if (res.status === 200) {
                     window.alert("Request made successfully")

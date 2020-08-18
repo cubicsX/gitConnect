@@ -304,7 +304,6 @@ class projectdisplay extends Component {
                                                             <TableRow>
                                                                 <TableCell>{sk.userId}</TableCell>
                                                                 <TableCell>{sk.status}</TableCell>
-                                                                <TableCell>{sk.status === 'accepted' ? <> <button>Accept</button> {'  '} <button>Reject</button> </> : null}</TableCell>
                                                             </TableRow>
                                                         </TableBody>
                                                     ))}

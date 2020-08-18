@@ -66,7 +66,6 @@ router.post("/get-projects", authenticate, async (req, res) => {
 	}
 })
 
-
 router.post("/addproject", authenticate, async (req, res) => {
 	const projectData = req.body
 	projectData.postDate = new Date()
