@@ -14,7 +14,7 @@ connectDB(() => console.log("Database Connected"))
 
 async function connectDB(callback) {
 	if (database) return callback()
-	if (isReq) await sleep(5000).then(() => callback())
+	if (isReq) await sleep(3000).then(() => callback())
 	isReq = true
 	MongoClient.connect(
 		process.env.MONGODB,
@@ -36,9 +36,9 @@ const getDb = (coll) => {
 		if (coll) return database.collection(coll)
 		else return database
 	}
-	// sleep(5000).then(() => {
-	// 	return getDb(coll)
-	// })
+	sleep(1000).then(() => {
+		return getDb(coll)
+	})
 }
 
 function sleep(ms) {
