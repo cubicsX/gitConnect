@@ -29,6 +29,7 @@ const githubAuth = async (req, res, next) => {
 			},
 		})
 		req.user = userGithub
+		req.user.githubToken = accessToken
 		next() // call the route
 	} catch (error) {
 		console.log(error)

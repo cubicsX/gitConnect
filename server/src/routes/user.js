@@ -36,6 +36,7 @@ router.get("/github", githubAuth, async (req, res) => {
 				linkedInProfile: null,
 				skills: [],
 				bookmarks: [],
+				githubToken: req.user.githubToken,
 			}
 
 			user = await userDb.insertOne(user)
@@ -64,7 +65,7 @@ router.get("/profile", authenticate, async (req, res) => {
 	try {
 		const user = await userDb.findOne(
 			{ _id: req.userId },
-			{ projection: { _id: 0 } }
+			{ projection: { _id: 0, githubToken: 0 } }
 		)
 		res.send(user)
 	} catch (error) {
@@ -75,16 +76,15 @@ router.get("/profile", authenticate, async (req, res) => {
 
 //to update user details
 router.put("/profile", authenticate, async (req, res) => {
-	const user = req.body
+	const linkedInProfile = req.body.linkedInProfile
+	const skills = req.body.skills
 	console.log(req.body)
-	User.validate(user)
-	if (User.validate.errors) {
-		console.log(User.validate.errors)
-		return res.status(400).send("Invalid data. ")
-	}
 
 	try {
-		await userDb.updateOne({ _id: req.userId }, { $set: user })
+		await userDb.updateOne(
+			{ _id: req.userId },
+			{ $set: { linkedInProfile, skills } }
+		)
 		return res.status(200).send(true)
 	} catch (error) {
 		console.log(error)
@@ -111,6 +111,38 @@ router.post("/addbookmark", authenticate, async (req, res) => {
 	} catch (err) {
 		console.log(err)
 		res.status(400).send("Try again")
+	}
+})
+
+router.get("/update-github", authenticate, async (req, res) => {
+	try {
+		const { githubToken } = await userDb.findOne(
+			{ _id: req.userId },
+			{ projection: { githubToken: 1, _id: 0 } }
+		)
+		console.log(githubToken, " github token")
+		if (githubToken) {
+			let userGithub = await axios.get("https://api.github.com/user", {
+				headers: {
+					Authorization: "Bearer " + githubToken,
+					accept: "application/json",
+				},
+			})
+			userGithub = userGithub.data
+			let user = {
+				name: userGithub.name,
+				username: userGithub.login,
+				email: userGithub.email,
+				githubProfile: userGithub.html_url,
+				avatar: userGithub.avatar_url,
+				githubProjects: userGithub.public_repos,
+			}
+			await userDb.updateOne({ _id: req.userId }, { $set: user })
+			res.send(user)
+		}
+	} catch (err) {
+		console.log(err)
+		res.status(500).send("Can not update user profile")
 	}
 })
 
