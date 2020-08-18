@@ -23,19 +23,30 @@ router.post("/get-projects", authenticate, async (req, res) => {
 		)
 		userId = userId._id
 	} else userId = req.userId
-	console.log(userId)
 	try {
 		let projects = await projectDb
 			.find({ "developer.userId": userId })
 			.toArray()
-		console.log(projects)
 
-		res.send(projects)
+		let ownerProject = [],
+			collaboratorProject = []
+		for (let i = 0; i < projects.length; i++) {
+			let devs = projects[i].developer
+			for (let j = 0; j < devs.length; j++) {
+				if (devs[j].userId.toString() === userId.toString()) {
+					if (devs[j].authority == "owner")
+						ownerProject.push(projects[i])
+					else collaboratorProject.push(projects[i])
+				}
+			}
+		}
+		res.send([ ownerProject, collaboratorProject ])
 	} catch (err) {
 		console.log(err)
 		res.status(500).send("Try again!")
 	}
 })
+
 
 router.post("/addproject", authenticate, async (req, res) => {
 	const projectData = req.body
@@ -107,17 +118,18 @@ router.post("/find", async (req, res) => {
 	}
 })
 
-router.post("/accept-contributer", authenticate, async (req, res) => {
+router.post("/accept-requests", authenticate, async (req, res) => {
 	const projectId = ObjectID(req.body.projectId)
 	const userId = ObjectID(req.body.userId)
 	try {
 		let result = await projectDb.findOne({
 			_id: projectId,
 			$and: [
-				{ "developer.userId": req.userId },
-				{ "developer.authority": "owner" },
+				{ "developer.$.userId": req.userId },
+				{ "developer.$.authority": "owner" },
 			],
 		})
+		console.log(result)
 		if (result) {
 			result = await projectDb.updateOne(
 				{

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Skilltable from './Skill_table';
 import SkillForm from './Skill_Form';
+import StickyHeader from 'react-sticky-header';
+import './css/header.css'
 import TagForm from './Tag_form';
 import Tagtable from './Tag_table';
 import axios from 'axios';
@@ -11,16 +13,16 @@ class newidea extends Component {
         let month = newDate.getMonth() + 1;
         let year = newDate.getFullYear();
         let separator = '-'
-        let todate = `${year}${separator}${month<10?`0${month}`:`${month}`}${separator}${date}`;
+        let todate = `${year}${separator}${month < 10 ? `0${month}` : `${month}`}${separator}${date}`;
         super(props)
         this.state = {
             Skills: [],
             Tags: [],
-            status:'',
-            newprojname:'',
-            newprojdesc:'',
-            newgiturl:'',
-            date:todate,
+            status: '',
+            newprojname: '',
+            newprojdesc: '',
+            newgiturl: '',
+            date: todate,
         }
         this.removeSkill = this.removeSkill.bind(this);
         this.removeTag = this.removeTag.bind(this);
@@ -47,24 +49,24 @@ class newidea extends Component {
             })
         });
     }
-    handlechangeradio = (event)=>{
+    handlechangeradio = (event) => {
         this.setState({
-            status:event.target.value
+            status: event.target.value
         })
     }
-    newprojnamefun =(event)=>{
+    newprojnamefun = (event) => {
         this.setState({
-            newprojname:event.target.value
+            newprojname: event.target.value
         })
     }
-    newprojdescfun =(event)=>{
+    newprojdescfun = (event) => {
         this.setState({
-            newprojdesc:event.target.value
+            newprojdesc: event.target.value
         })
     }
-    newgiturlfun = (event) =>{
+    newgiturlfun = (event) => {
         this.setState({
-            newgiturl:event.target.value
+            newgiturl: event.target.value
         })
     }
     handleSubmit = Skill => {
@@ -73,44 +75,81 @@ class newidea extends Component {
     handleSubmittag = Tag => {
         this.setState({ Tags: [...this.state.Tags, Tag] });
     }
-    submitdetails = ()=>{
-       let  projectData = {
-           projectTitle:this.state.newprojname, 
-           shortDesc:this.state.newprojdesc,
-           githubRepo:this.state.newgiturl,
-           status:this.state.status,
-           tags:this.state.Tags,
-           skillsRequired:this.state.Skills,
-           postDate:new Date()
-       }
-        let server = axios.create({
-            baseURL:'http://localhost:9000/api',
-          })
-        console.log(server.post('/project/addproject',projectData)
-        .then((res)=>{
-            if (res.status ===200) {
-                alert('Success')
-            }
-       })
-        .catch(err=>{
-            window.alert(err)
-        }))
-        
+    submitdetails = () => {
+        let projectData = {
+            projectTitle: this.state.newprojname,
+            shortDesc: this.state.newprojdesc,
+            githubRepo: this.state.newgiturl,
+            status: this.state.status,
+            tags: this.state.Tags,
+            skillsRequired: this.state.Skills,
+            postDate: new Date()
         }
-    resetDetails = ()=>{
+        let server = axios.create({
+            baseURL: 'http://localhost:9000/api',
+        })
+        console.log(server.post('/project/addproject', projectData)
+            .then((res) => {
+                if (res.status === 200) {
+                    alert('Success')
+                }
+            })
+            .catch(err => {
+                window.alert(err)
+            }))
+
+    }
+    resetDetails = () => {
     }
     render() {
         return (
-                <>
+            <>
+                <StickyHeader
+                    header={
+                        <header className="smaller">
+                            <div class="Center">
+                                <div class="site-logo">
+                                    <h1><a href="#">Git<span>C</span>onnect</a></h1>
+                                </div>
+                                <div id={this.state.isMobile ? 'mobile_sec' : ''}>
+                                    <div class={this.state.isMobile ? "mobile" : ''}><i className={this.state.isMobile ? "fa fa-bars" : ''}></i><i className={this.state.isMobile ? "fa fa-times" : ''}></i></div>
+                                    <div class={this.state.isMobile ? "menumobile" : ''}>
+                                        <nav class="Navigation">
+                                            <ul>
+                                                <li>
+                                                    <a href="/projectdisplay">Project Details</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/profile">Profile</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/dashboard">Dashboard</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/newidea">New Idea</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </header>
+                    }
+                ></StickyHeader><br /><br /><br /><br /><br />
                 <h2>New Projects Details</h2>
-                <p>Project Name:</p><input type="text" onChange={this.newprojnamefun} value ={this.state.newprojname}/><br />
-                <p>Project Description:</p><input type="text" onChange={this.newprojdescfun} value ={this.state.newprojdesc} /><br />
-                <p>Project Github URL:</p><input type="text"onChange={this.newgiturlfun} value ={this.state.newgiturl} /><br />
+                <p>Project Name:</p><input type="text" onChange={this.newprojnamefun} value={this.state.newprojname} /><br />
+                <p>Project Description:</p><input type="text" onChange={this.newprojdescfun} value={this.state.newprojdesc} /><br />
+                <p>Project Github URL:</p><input type="text" onChange={this.newgiturlfun} value={this.state.newgiturl} /><br />
                 <p>Project status:</p>
                 <div onChange={this.handlechangeradio}>
-                <input type="radio" name="status" value='active'  /><label for="active">active</label><br />
-                <input type="radio" name="status" value='ongoing'/><label for="ongoing">ongoing</label><br />
-                <input type="radio" name="status" value='hide' /><label for="hide">hide</label><br />
+                    <input type="radio" name="status" value='active' /><label for="active">active</label><br />
+                    <input type="radio" name="status" value='ongoing' /><label for="ongoing">ongoing</label><br />
+                    <input type="radio" name="status" value='hide' /><label for="hide">hide</label><br />
                 </div>
                 <Tagtable
                     tagdata={this.state.Tags}
