@@ -41,5 +41,4 @@ const userModel = {
 
 //user validation model
 const validate = ajv.compile(userModel)
-
 module.exports = { validate }

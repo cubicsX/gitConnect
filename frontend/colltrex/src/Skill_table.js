@@ -16,7 +16,7 @@ const TableBody = props => {
         return (
                 <TableRow>
                     <TableCell>{row.skill}</TableCell>
-                    <TableCell><button onClick={() => props.removeSkill(index)}>Delete</button></TableCell>
+                    <TableCell><button onClick={() => props.removeSkill(index)} class='btn'>Delete</button></TableCell>
                 </TableRow>
         );
     });

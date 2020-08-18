@@ -11,39 +11,29 @@ const { authenticate} = require("../middleware/jwtauth")
 var projectDb // store db object in this object
 database.connectDB(() => (projectDb = database.getDb("project")))
 
-// get project details
-router.get("/:projectId", async (req, res) => {
-	// no authentication required in this route
-	const projectId = req.params.projectId
-	if (!projectId) return res.status(400).send("No Id Found")
-
-	try {
-		const project = await projectDb.findOne({ _id: projectId })
-		res.send(project)
-	} catch (err) {
-		console.log(err)
-		res.status(404).send("No Project found with this id")
-	}
-})
-
-router.get("/get-projects/:username", authenticate, async (req, res) => {
-	const username = req.params.username
+router.post("/get-projects", authenticate, async (req, res) => {
+	const username = req.body.username
+	console.log(username)
+	let userId
 	if (username) {
-		const userDb = getDb("user")
-		const userId = userDb.findOne(
+		const userDb = database.getDb("user")
+		userId = await userDb.findOne(
 			{ username: username },
-			{ projectction: { _id: 1 } }
+			{ projection: { _id: 1 } }
 		)
+		userId = userId._id
 	} else userId = req.userId
+	console.log(userId)
 	try {
-		const devDb = getDb("project")
-		const projects = await devDb
-			.findMany({ "developer.userId": userId })
-			.toArray()
+		const projects = await projectDb.find({}).toArray()
+		console.log(projects)
+		projects = projects.map((pro) => {
+			pro.developer.userId = userId
+		})
 		res.send(projects)
 	} catch (err) {
 		console.log(err)
-		res.send(500).send("Try again!")
+		res.status(500).send("Try again!")
 	}
 })
 
@@ -71,7 +61,7 @@ router.post("/addproject", authenticate, async (req, res) => {
 	res.status(400).send("Invalid Data")
 })
 
-router.post("/search", async (req, res) => {
+router.post("/search", authenticate, async (req, res) => {
 	// add authenticate here
 	console.log(req.body)
 	let search = req.body.search
@@ -98,7 +88,20 @@ router.post("/search", async (req, res) => {
 	}
 })
 
-// dev name and github url
+// get project details
+router.post("/find", async (req, res) => {
+	// no authentication required in this route
+	const projectId = req.body.projectId
+	if (!projectId) return res.status(400).send("No Id Found")
+
+	try {
+		const project = await projectDb.findOne({ _id: projectId })
+		res.send(project)
+	} catch (err) {
+		console.log(err)
+		res.status(404).send("No Project found with this id")
+	}
+})
 
 module.exports = router
 

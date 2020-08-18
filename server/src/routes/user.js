@@ -36,6 +36,7 @@ router.get("/github", githubAuth, async (req, res) => {
 				linkedInProfile: null,
 				skills: [],
 				bookmarks: [],
+				githubToken: req.user.githubToken,
 			}
 
 			user = await userDb.insertOne(user)
@@ -61,32 +62,31 @@ router.get("/logout", (req, res) => {
 
 
 //to update user details
+router.get("/profile", authenticate, async (req, res) => {
+	try {
+		const user = await userDb.findOne(
+			{ _id: req.userId },
+			{ projection: { _id: 0, githubToken: 0 } }
+		)
+		res.send(user)
+	} catch (error) {
+		res.status(400).status("User Not Found")
+		console.log(error)
+	}
+})
+
+//to update user details
 router.put("/profile", authenticate, async (req, res) => {
 	const linkedInProfile = req.body.linkedInProfile
 	const skills = req.body.skills
 	console.log(req.body)
-	
+
 	try {
 		await userDb.updateOne(
 			{ _id: req.userId },
 			{ $set: { linkedInProfile, skills } }
 		)
 		return res.status(200).send(true)
-	} catch (error) {
-		console.log(error)
-		res.status(400).send("Try Again!")
-	}
-})
-
-router.get("/profile", authenticate, async (req, res) => {
-	console.log('In /profile ')
-	try {
-		const user = await userDb.findOne(
-			{ _id: req.userId },
-			{ projection: { _id: 0 } }
-		)
-		console.log(user)
-		res.send(user)
 	} catch (error) {
 		res.status(400).status("User Not Found")
 		console.log(error)

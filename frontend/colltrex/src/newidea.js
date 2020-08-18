@@ -4,8 +4,6 @@ import SkillForm from './Skill_Form';
 import TagForm from './Tag_form';
 import Tagtable from './Tag_table';
 import axios from 'axios';
-
-
 class newidea extends Component {
     constructor(props) {
         let newDate = new Date()

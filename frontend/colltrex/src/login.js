@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './css/theme.css';
 import './css/media.css';
+import './css/header.css';
+import './css/base.css';
 import './css/font-awesome.min.css';
 import "slick-carousel/slick/slick.css";  
 import "slick-carousel/slick/slick-theme.css";  

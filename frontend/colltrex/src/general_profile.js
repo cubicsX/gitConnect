@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import axios from 'axios';
 import './profile.css'
 class general_profile extends Component {
@@ -39,7 +38,6 @@ class general_profile extends Component {
         if(this.state.user.length !== 0){
             comp_render = (
                 <>
-                <div class="gen_body">
                     <div class="profile-main">
                         <div class="profile-header">
                             <div class="user-detail">
@@ -72,7 +70,8 @@ class general_profile extends Component {
                                 <div class="bio-box">
                                     <div class="heading">
                                         <p>Professional Bio
-                         <label>{this.state.user[0].githubProjects} project</label></p>
+                                             <label>{this.state.user[0].githubProjects} project</label>
+                                        </p>
                                     </div>
                                     <div class="desc">
                                         ore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -94,8 +93,6 @@ class general_profile extends Component {
                             </div>
                         </div>
                     </div>
-
-                </div>
             </>
             )
         }

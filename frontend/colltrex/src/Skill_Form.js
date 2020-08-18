@@ -23,14 +23,16 @@ class Skill_Form extends Component {
         return (
             <>
                 <form onSubmit = {this.onFormSubmit}>
-                    <label for="Skill">Skill</label>
-                    <input 
+                <input 
                         type="text"
                         name="skill"
                         id="skill"
+                        class="form__input"
+                        placeholder="Add your new Skills"
                         value={this.state.skill}
                         onChange ={this.handlechange}/>
-                    <button type='submit'>ADD SKILL</button>
+                        <button type='submit' class="btn">ADD SKILL</button>
+                
                 </form>
             </>
         )

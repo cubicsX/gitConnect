@@ -1,4 +1,4 @@
-.gen_body{
+.body{
 	background-image: url('11.jpg');
   background-repeat: no-repeat;
   background-attachment: fixed 100% 100%;
@@ -81,7 +81,7 @@
 
 /*tab*/
 .tab-panel-main{
-  width: 75%;
+  width: 90%;
   margin: 0 auto;
 }
 
@@ -92,7 +92,7 @@ ul.tabs{
   display: flex;
   position: absolute;
   top: 207px;
-  right: 400px;
+  right: 900px;
 }
 ul.tabs.button2:hover {
   background-color: #008CBA; /* Blue */
@@ -202,8 +202,8 @@ ul.tabs li.current{
 .bio-box .desc{
   padding: 10px 10px 10px 10px;
   text-align: justify;
-  color: #838383;
-  font-size: 13px;
+  color: #000000;
+  font-size: 18px;
 }
 .detail-box{
   padding: 10px;
