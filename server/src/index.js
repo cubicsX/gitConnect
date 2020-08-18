@@ -33,6 +33,9 @@ app.get("/newidea", auth.authenticate, function (req, res) {
 app.get("/profile", auth.authenticate, function (req, res) {
 	res.sendFile(path.join(__dirname, "build", "index.html"))
 })
+app.get("/edit_profile", auth.authenticate, function (req, res) {
+	res.sendFile(path.join(__dirname, "build", "index.html"))
+})	
 app.get("/test", (req, res) => {
 	console.log(req.cookies)
 	res.send("Done")

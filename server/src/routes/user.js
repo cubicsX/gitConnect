@@ -6,6 +6,7 @@ const User = require("../models/user")
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
 const { authenticate, getToken } = require("../middleware/jwtauth")
+const user = require("../models/user")
 
 var userDb // store db object in this object
 database.connectDB(() => (userDb = database.getDb("user")))
@@ -25,16 +26,18 @@ router.get("/github", githubAuth, async (req, res) => {
 		)
 		//if user does not exist, create a new user
 		if (!userId) {
-			user = {
+			let user = {
 				name: req.user.data.name,
 				username: req.user.data.login,
 				email: req.user.data.email,
 				githubProfile: req.user.data.html_url,
 				avatar: req.user.data.avatar_url,
+				githubProjects: req.user.data.public_repos,
 				linkedInProfile: null,
 				skills: [],
 				bookmarks: [],
 			}
+
 			user = await userDb.insertOne(user)
 			userId = user.insertedId
 		}
@@ -56,51 +59,44 @@ router.get("/logout", (req, res) => {
 	res.send("You are logged out perfectly") // ------- redirect user here
 })
 
-// to get user details
-router.post("/profile", authenticate, async (req, res) => {
-	try {
-		const user = await userDb.findOne(
-			{ _id: req.userId },
-			{ projection: { _id: 0 } }
-		)
-		res.send(user)
-	} catch (error) {
-		res.status(400).status("User Not Found")
-		console.log(error)
-	}
-})
 
 //to update user details
 router.put("/profile", authenticate, async (req, res) => {
-	const user = req.body
-	User.validate(user)
-	if (User.validate.errors) return res.status(400).send("Invalid Data")
-
+	const linkedInProfile = req.body.linkedInProfile
+	const skills = req.body.skills
+	console.log(req.body)
+	
 	try {
-		await userDb.updateOne({ _id: req.userId }, { $set: user })
+		await userDb.updateOne(
+			{ _id: req.userId },
+			{ $set: { linkedInProfile, skills } }
+		)
 		return res.status(200).send(true)
 	} catch (error) {
 		console.log(error)
 		res.status(400).send("Try Again!")
 	}
 })
+
 router.get("/profile", authenticate, async (req, res) => {
+	console.log('In /profile ')
 	try {
 		const user = await userDb.findOne(
 			{ _id: req.userId },
 			{ projection: { _id: 0 } }
 		)
+		console.log(user)
 		res.send(user)
 	} catch (error) {
 		res.status(400).status("User Not Found")
 		console.log(error)
 	}
 })
+
 router.post("/addbookmark", authenticate, async (req, res) => {
-	const projectId = req.bookmark_data.projectId
-	const projectTitle = req.body.bookmark_data.projectTitle
-	console.log(req.body)
-	console.log(req.userId)
+	console.log(req)
+	const projectId = req.body.projectId
+	const projectTitle = req.body.projectTitle
 	try {
 		const result = await userDb.updateOne(
 			{ _id: req.userId },
@@ -117,6 +113,38 @@ router.post("/addbookmark", authenticate, async (req, res) => {
 	} catch (err) {
 		console.log(err)
 		res.status(400).send("Try again")
+	}
+})
+
+router.get("/update-github", authenticate, async (req, res) => {
+	try {
+		const { githubToken } = await userDb.findOne(
+			{ _id: req.userId },
+			{ projection: { githubToken: 1, _id: 0 } }
+		)
+		console.log(githubToken, " github token")
+		if (githubToken) {
+			let userGithub = await axios.get("https://api.github.com/user", {
+				headers: {
+					Authorization: "Bearer " + githubToken,
+					accept: "application/json",
+				},
+			})
+			userGithub = userGithub.data
+			let user = {
+				name: userGithub.name,
+				username: userGithub.login,
+				email: userGithub.email,
+				githubProfile: userGithub.html_url,
+				avatar: userGithub.avatar_url,
+				githubProjects: userGithub.public_repos,
+			}
+			await userDb.updateOne({ _id: req.userId }, { $set: user })
+			res.send(user)
+		}
+	} catch (err) {
+		console.log(err)
+		res.status(500).send("Can not update user profile")
 	}
 })
 

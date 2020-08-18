@@ -14,6 +14,7 @@ const userModel = {
 		name: { title: "Full Name ", type: "string", maxLength: 40 },
 		username: { title: "Username", type: "string", maxLength: 40 },
 		email: { title: "Email", type: "string", format: "email" },
+		description: { type: "string" },
 		githubProfile: {
 			title: "Github Profile",
 			type: "string",
@@ -28,12 +29,12 @@ const userModel = {
 		skills: {
 			title: "Skills",
 			type: "array",
-			items: { type: "string", maxLength: 40 },
+			items: { type: "object" },
 		},
 		bookmarks: {
 			title: "Bookmarks",
 			type: "array",
-			items: { type: "string", maxLength: 40 },
+			items: { type: "object" },
 		},
 	},
 }

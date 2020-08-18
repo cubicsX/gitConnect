@@ -1,20 +1,23 @@
-import React from 'react'
+import React from 'react';
+import Table from '@material-ui/core/Table';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import Tablebody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 const TableHeader = () => {
     return (
-        <thead>
-            <tr>
-                <th>SKILL</th>
-            </tr>
-        </thead>
+            <h1>Your Skill</h1>
     );
 }
 const TableBody = props => {
     const rows = props.skilldata.map((row, index) => {
         return (
-            <tr key={index}>
-                <td>{row.skill}</td>
-                <td><button onClick={() => props.removeSkill(index)}>Delete</button></td>
-            </tr>
+                <TableRow>
+                    <TableCell>{row.skill}</TableCell>
+                    <TableCell><button onClick={() => props.removeSkill(index)}>Delete</button></TableCell>
+                </TableRow>
         );
     });
 

@@ -87,7 +87,9 @@ class dashbord extends Component {
         })
         server.post('/user/addbookmark', bookmark_data)
             .then((res) => {
-                console.log(res);
+                if(res.status===200){
+                    window.alert("Bookmark added successfully")
+                }
             })
             .catch(err => {
                 window.alert(err)
