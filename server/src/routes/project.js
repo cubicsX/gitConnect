@@ -28,9 +28,21 @@ router.post("/get-projects", authenticate, async (req, res) => {
 		let projects = await projectDb
 			.find({ "developer.userId": userId })
 			.toArray()
-		console.log(projects)
 
-		res.send(projects)
+		let ownerProject = [],
+			collaboratorProject = []
+		for (let i = 0; i < projects.length; i++) {
+			let devs = projects[i].developer
+			for (let j = 0; j < devs.length; j++) {
+				if (devs[j].userId.toString() === userId.toString()) {
+					if (devs[j].authority == "owner")
+						ownerProject.push(projects[i])
+					else collaboratorProject.push(projects[i])
+				}
+			}
+		}
+		console.log()
+		res.send({ ownerProject, collaboratorProject })
 	} catch (err) {
 		console.log(err)
 		res.status(500).send("Try again!")
