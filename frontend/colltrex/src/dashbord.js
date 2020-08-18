@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import './css/header.css';
+import StickyHeader from 'react-sticky-header';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import Grid from "@material-ui/core/Grid";
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -14,14 +15,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TextField from "@material-ui/core/TextField";
 import Paper from '@material-ui/core/Paper';
-import FilledInput from '@material-ui/core/FilledInput';
 import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
+
 const useStyles = makeStyles((theme) => ({
     root: {
         maxWidth: 354,
@@ -90,6 +88,18 @@ class dashbord extends Component {
     makerequest = (event) => {
         //let data = { authority: this.state.authority, prjid: event.target.id }
         //make axious request for this data;
+        let server = axios.create({
+            baseURL: 'http://localhost:9000/api',
+        })
+        server.post('/project/join-project', {projectId: event.currentTarget.id})
+            .then((res) => {
+                if (res.status === 200) {
+                    window.alert("Request made successfully")
+                }
+            })
+            .catch(err => {
+                window.alert(err)
+            })
     }
     bookmarks = (event) => {
         let bookmark_data = { projectId: event.currentTarget.id, projectTitle: event.currentTarget.name }
@@ -109,6 +119,44 @@ class dashbord extends Component {
     render() {
         return (
             <>
+                <StickyHeader
+                    // This is the sticky part of the header.
+                    header={
+                        <header className="smaller">
+                        <div class="Center">
+                          <div class="site-logo">
+                            <h1><a href="#">Git<span>C</span>onnect</a></h1>
+                          </div>
+                          <div id={this.state.isMobile ? 'mobile_sec' : ''}>
+                            <div class={this.state.isMobile ? "mobile" : ''}><i className={this.state.isMobile ? "fa fa-bars" : ''}></i><i className={this.state.isMobile ? "fa fa-times" : ''}></i></div>
+                            <div class={this.state.isMobile ? "menumobile" : ''}>
+                              <nav class="Navigation">
+                                <ul>
+                                  <li>
+                                    <a href="/projectdisplay">Project Details</a>
+                                    <span class="menu-item-bg"></span>
+                                  </li>
+                                  <li>
+                                    <a href="/profile">Profile</a>
+                                    <span class="menu-item-bg"></span>
+                                  </li>
+                                  <li>
+                                    <a href="/dashboard">Dashboard</a>
+                                    <span class="menu-item-bg"></span>
+                                  </li>
+                                  <li>
+                                    <a href="/newidea">New Idea</a>
+                                    <span class="menu-item-bg"></span>
+                                  </li>
+                                </ul>
+                              </nav>
+                            </div>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                      </header>
+                    }
+                ></StickyHeader><br/><br/><br/><br/><br/>
 
                 <InputLabel htmlFor="component-simple">Search</InputLabel>
                 <Input id="component-simple" value={this.state.searchtag} onChange={this.handlechange} />

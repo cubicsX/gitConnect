@@ -6,6 +6,7 @@ import Gen_prof from './general_profile'
 import Edit_profile from './edit_profile';
 import Projects from './projects';
 import NewIdea from './newidea';
+import Projectdisplay from './projectdisplay'
 class App extends Component {
   constructor(props) {
     super(props)
@@ -46,6 +47,7 @@ class App extends Component {
                 <Route exact path={"/project"} render={props => (<Projects {...props} univ_userid={this.state.loggeduser_id} />)} />
                 <Route exact path={"/newidea"} render={props => (<NewIdea {...props} univ_userid={this.state.loggeduser_id} />)} />
                 <Route exact path={"/edit_profile"} render={props => (<Edit_profile {...props} univ_userid={this.state.loggeduser_id} skill = {this.state.sk} />)} />
+                <Route exact path={"/projectdisplay"} render={props => (<Projectdisplay {...props} univ_userid={this.state.loggeduser_id} />)} />
               </Switch>
             </BrowserRouter>
       </div>

@@ -6,7 +6,7 @@ const Project = require("../models/project")
 const ObjectID = require("mongodb").ObjectID
 
 // require jwtAuth function, getTOken is to get new tokens, authenticate will very the tokens
-const { authenticate} = require("../middleware/jwtauth")
+const { authenticate } = require("../middleware/jwtauth")
 
 var projectDb // store db object in this object
 database.connectDB(() => (projectDb = database.getDb("project")))
@@ -23,14 +23,43 @@ router.post("/get-projects", authenticate, async (req, res) => {
 		)
 		userId = userId._id
 	} else userId = req.userId
-	console.log(userId)
 	try {
 		let projects = await projectDb
 			.find({ "developer.userId": userId })
 			.toArray()
-		console.log(projects)
 
-		res.send(projects)
+		let userIds = []
+		for (let i = 0; i < projects.length; i++)
+			for (let j = 0; j < projects[i].developer.length; j++)
+				userIds.push(projects[i].developer[j].userId)
+
+		const userDb = database.getDb("user")
+		const usernames = await userDb
+			.find({ _id: { $in: userIds } }, { projection: { username: 1 } })
+			.toArray()
+		console.log(usernames)
+
+		let ownerProject = [],
+			collaboratorProject = []
+		for (let i = 0; i < projects.length; i++) {
+			let devs = projects[i].developer
+			for (let j = 0; j < devs.length; j++) {
+				for (let user = 0; user < usernames.length; user++) {
+					if (
+						devs[j].userId.toString() ===
+						usernames[user]._id.toString()
+					)
+						devs[j].username = usernames[user].username
+				}
+				if (devs[j].userId.toString() === userId.toString()) {
+					if (devs[j].authority == "owner")
+						ownerProject.push(projects[i])
+					else collaboratorProject.push(projects[i])
+				}
+			}
+		}
+		//owner , collaborator, accepted
+		res.send([ownerProject, collaboratorProject])
 	} catch (err) {
 		console.log(err)
 		res.status(500).send("Try again!")
@@ -107,24 +136,26 @@ router.post("/find", async (req, res) => {
 	}
 })
 
-router.post("/accept-contributer", authenticate, async (req, res) => {
+router.post("/requests", authenticate, async (req, res) => {
 	const projectId = ObjectID(req.body.projectId)
 	const userId = ObjectID(req.body.userId)
+	const status = req.body.status
 	try {
 		let result = await projectDb.findOne({
 			_id: projectId,
 			$and: [
-				{ "developer.userId": req.userId },
-				{ "developer.authority": "owner" },
+				{ "developer.$.userId": req.userId },
+				{ "developer.$.authority": "owner" },
 			],
 		})
+		console.log(result)
 		if (result) {
 			result = await projectDb.updateOne(
 				{
 					_id: projectId,
 					"developer.userId": userId,
 				},
-				{ $set: { "developer.$.status": "accepted" } }
+				{ $set: { "developer.$.status": status } }
 			)
 		}
 		res.send("Contributor Added Successfully.")

@@ -60,6 +60,8 @@ router.get("/logout", (req, res) => {
 	res.send("You are logged out perfectly") // ------- redirect user here
 })
 
+// get user projects
+
 
 //to update user details
 router.get("/profile", authenticate, async (req, res) => {

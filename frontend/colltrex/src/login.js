@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import './css/theme.css';
 import './css/media.css';
-import './css/header.css';
-import './css/base.css';
 import './css/font-awesome.min.css';
 import "slick-carousel/slick/slick.css";  
 import "slick-carousel/slick/slick-theme.css";  
@@ -53,7 +51,7 @@ class login extends Component {
         return (
             <div className={this.state.loadedstatus}>
                 <div class="DesignHolder">
-          <div class="LayoutFrame">
+                 <div class="LayoutFrame">
             
             <header className={this.state.headersize}>
               <div class="Center">
@@ -78,11 +76,7 @@ class login extends Component {
                           <span class="menu-item-bg"></span>
                         </li>
                         <li>
-                          <a href="/dashboard">Dashboard</a>
-                          <span class="menu-item-bg"></span>
-                        </li>
-                        <li>
-                          <a href="/newidea">New Idea</a>
+                          <a href="#about">About</a>
                           <span class="menu-item-bg"></span>
                         </li>
                       </ul>

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import StickyHeader from 'react-sticky-header';
+import './css/header.css'
 import './profile.css'
 class general_profile extends Component {
     constructor(props) {
@@ -7,7 +9,7 @@ class general_profile extends Component {
         this.state = {
             user: []
         }
-        this.editprofile =this.editprofile.bind(this);
+        this.editprofile = this.editprofile.bind(this);
         console.log(this.state.user)
     }
     componentDidMount() {
@@ -23,19 +25,19 @@ class general_profile extends Component {
                 dt.push(res.data)
                 t.setState({
                     user: dt
-                },()=>this.props.prevskill(this.state.user[0].skills))
+                }, () => this.props.prevskill(this.state.user[0].skills))
             })
             .catch(err => {
                 console.log(err)
             })
-        
+
     }
-    editprofile = ()=>{
+    editprofile = () => {
         this.props.history.push('/edit_profile')
     }
     render() {
         let comp_render
-        if(this.state.user.length !== 0){
+        if (this.state.user.length !== 0) {
             comp_render = (
                 <>
                     <div class="profile-main">
@@ -93,14 +95,51 @@ class general_profile extends Component {
                             </div>
                         </div>
                     </div>
-            </>
+                </>
             )
         }
-        else{
+        else {
             console.log("nodata")
         }
         return (
             <>
+                <StickyHeader
+                    header={
+                        <header className="smaller">
+                            <div class="Center">
+                                <div class="site-logo">
+                                    <h1><a href="#">Git<span>C</span>onnect</a></h1>
+                                </div>
+                                <div id={this.state.isMobile ? 'mobile_sec' : ''}>
+                                    <div class={this.state.isMobile ? "mobile" : ''}><i className={this.state.isMobile ? "fa fa-bars" : ''}></i><i className={this.state.isMobile ? "fa fa-times" : ''}></i></div>
+                                    <div class={this.state.isMobile ? "menumobile" : ''}>
+                                        <nav class="Navigation">
+                                            <ul>
+                                                <li>
+                                                    <a href="/projectdisplay">Project Details</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/profile">Profile</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/dashboard">Dashboard</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                                <li>
+                                                    <a href="/newidea">New Idea</a>
+                                                    <span class="menu-item-bg"></span>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </header>
+                    }
+                ></StickyHeader><br /><br /><br /><br /><br />
                 {comp_render}
             </>
         )
