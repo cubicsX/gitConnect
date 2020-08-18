@@ -25,11 +25,11 @@ router.post("/get-projects", authenticate, async (req, res) => {
 	} else userId = req.userId
 	console.log(userId)
 	try {
-		const projects = await projectDb.find({}).toArray()
+		let projects = await projectDb
+			.find({ "developer.userId": userId })
+			.toArray()
 		console.log(projects)
-		projects = projects.map((pro) => {
-			pro.developer.userId = userId
-		})
+
 		res.send(projects)
 	} catch (err) {
 		console.log(err)
@@ -42,12 +42,14 @@ router.post("/addproject", authenticate, async (req, res) => {
 	projectData.postDate = new Date()
 
 	console.log(req.userId)
-	projectData.developer = {
-		userId: req.userId,
-		authority: "owner",
-		role: "empty",
-		status: "accepted",
-	}
+	projectData.developer = [
+		{
+			userId: req.userId,
+			authority: "owner",
+			role: "empty",
+			status: "accepted",
+		},
+	]
 	console.log(projectData)
 
 	if (Project.validate(projectData)) {
@@ -102,6 +104,53 @@ router.post("/find", async (req, res) => {
 	} catch (err) {
 		console.log(err)
 		res.status(404).send("No Project found with this id")
+	}
+})
+
+router.post("/accept-contributer", authenticate, async (req, res) => {
+	const projectId = ObjectID(req.body.projectId)
+	const userId = ObjectID(req.body.userId)
+	try {
+		let result = await projectDb.findOne({
+			_id: projectId,
+			$and: [
+				{ "developer.userId": req.userId },
+				{ "developer.authority": "owner" },
+			],
+		})
+		if (result) {
+			result = await projectDb.updateOne(
+				{
+					_id: projectId,
+					"developer.userId": userId,
+				},
+				{ $set: { "developer.$.status": "accepted" } }
+			)
+		}
+		res.send("Contributor Added Successfully.")
+	} catch (err) {
+		console.log(err)
+		res.status(400).send("Try again")
+	}
+})
+
+router.post("/join-project", authenticate, async (req, res) => {
+	const projectId = req.body.projectId
+	let contributer = {
+		userId: req.userId,
+		authority: "contributer",
+		role: "developer",
+		status: "pending",
+	}
+	try {
+		await projectDb.updateOne(
+			{ _id: ObjectID(projectId) },
+			{ $push: { developer: contributer } }
+		)
+		res.send("Request Sent")
+	} catch (err) {
+		console.log(err)
+		res.status(400).send(err)
 	}
 })
 
