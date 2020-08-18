@@ -30,7 +30,7 @@ const projectModel = {
 
 		// developer model
 		developer: {
-			type: "object",
+			type: "array",
 			required: ["userId", "authority", "role", "status"],
 			additionalProperties: false,
 
