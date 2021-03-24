@@ -85,6 +85,15 @@ class StoreUser:
             user = user_collection.insert_one(user_info)
             return str(user.inserted_id)
         else:
+            ## We also update user github details here
+            user_collection.find_one_and_update({"_id": user["_id"]},{
+                "$set": {
+                    "username": user_info["username"],
+                    "userid": user_info["userid"],
+                    "avatar": user_info["avatar"],
+                    "githubURL": user_info["githubURL"],
+                }
+            })
             return str(user["_id"])
 
     @staticmethod
@@ -131,6 +140,8 @@ class SearchPageHandler:
         """
         search = search_collection.find_one({"_id": SEARCH_ID})
         user = user_collection.find_one({"_id": search_info["USER_ID"]})
+        if user == None:
+            raise ValueError("User not exists in database.")
         user_bookmarks = user["bookmarks"]
         user_contributions = user["contributions"]
         user_outgoing = user["outgoing"]
@@ -152,7 +163,6 @@ class SearchPageHandler:
                     project["bookmark"] = True if id in user_bookmarks else False
                 if user_outgoing == None:
                     project["contribution"] = False
-
                 else:
                     project["contribution"] = True if id in user_outgoing else False
                 projects_list.append(project)
@@ -192,6 +202,8 @@ class ProjectHandler:
         """
         project = project_collection.insert_one(project_info)
         user = user_collection.find_one({"_id": project_info["owner"]})
+        if user == None:
+            raise ValueError("User not exits in database.")
         list1 = user["owner"]
         list1.append(project.inserted_id)
         user_collection.find_one_and_update(
@@ -208,34 +220,20 @@ class ProjectHandler:
         for skill in project_info["projectSkills"]:
             try:
                 value_list = key[skill]
-                value_list.append(project.inserted_id)
-                search_collection.find_one_and_update(
-                    {"_id": SEARCH_ID}, {"$set": {skill: value_list}}, upsert=False
-                )
             except AttributeError:
                 value_list = list()
-                value_list.append(project.inserted_id)
-                search_collection.find_one_and_update(
-                    {"_id": SEARCH_ID},
-                    {
-                        "$set": {
-                            skill: value_list,
-                        }
-                    },
-                    upsert=False,
-                )
             except KeyError:
                 value_list = list()
-                value_list.append(project.inserted_id)
-                search_collection.find_one_and_update(
-                    {"_id": SEARCH_ID},
-                    {
-                        "$set": {
-                            skill: value_list,
-                        }
-                    },
-                    upsert=False,
-                )
+
+            value_list.append(project.inserted_id)
+            search_collection.find_one_and_update(
+                {"_id": SEARCH_ID}, {
+                    "$set": {
+                        skill: value_list
+                    }
+                },
+                upsert=False
+            )
 
     @staticmethod
     def update_project(project_info):
@@ -432,10 +430,12 @@ class UserHandler:
                 contributions
         """
         user = user_collection.find_one({"_id": user_id})
+        if user == None:
+            raise ValueError("User not exists in database.")
         user_bookmarks = list()
         for project_id in user["bookmarks"]:
             project = project_collection.find_one({"_id": project_id})
-            if project is None:
+            if project == None:
                 continue
             bookmark_details = {
                 "PROJECT_ID": str(project_id),
@@ -446,7 +446,7 @@ class UserHandler:
         user_contributions = list()
         for project_id in user["contributions"]:
             project = project_collection.find_one({"_id": project_id})
-            if project is None:
+            if project == None:
                 continue
             contribution_details = {
                 "projectTitle": project["projectTitle"],
@@ -536,6 +536,8 @@ class ContributionHandler:
                 OWNER_ID (bson.object.ObjectId)
         """
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
+        if owner == None:
+            raise ValueError("Project Owner is not exists in database.")
         incoming_list = owner["incoming"]
         incoming_list.append(
             {
@@ -553,6 +555,8 @@ class ContributionHandler:
             upsert=False,
         )
         user = user_collection.find_one({"_id": project_info["USER_ID"]})
+        if user == None:
+            raise ValueError("Requestes User is not exists in database.")
         user_outgoing = user["outgoing"]
         user_outgoing.append(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
@@ -579,6 +583,8 @@ class ContributionHandler:
                 OWNER_ID (bson.object.ObjectId)
         """
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
+        if owner == None:
+            raise ValueError("Project Owner is not exists in database.")
         incoming_list = owner["incoming"]
         incoming_list.remove(
             {
@@ -596,6 +602,8 @@ class ContributionHandler:
             upsert=False,
         )
         user = user_collection.find_one({"_id": project_info["USER_ID"]})
+        if user == None:
+            raise ValueError("Requestes User is not exists in database.")
         user_outgoing = user["outgoing"]
         user_outgoing.remove(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
@@ -633,9 +641,10 @@ class BookmarkHandler:
     @staticmethod
     def handle_bookmark(user_id, project_id, status):
         """
-        add or remove bookmark basedo on status.
+        add or remove bookmark based on status.
         if status is `True` then add bookmark,
         else remove bookmark.
+        Function call from add_bookmark and remove_bookmark methods with status.
 
         Args:
             user_id (bson.object.ObjectId)
@@ -643,6 +652,8 @@ class BookmarkHandler:
             status (bool)
         """
         user = user_collection.find_one({"_id": user_id})
+        if user == None:
+            raise ValueError("User not exists in database.")
         bookmark_list = user["bookmarks"]
         if status:
             bookmark_list.append(project_id)
@@ -763,21 +774,18 @@ class NotificationsHandler:
                 }
         """
         user = user_collection.find_one({"_id": user_id})
+        if user == None:
+            raise ValueError("User is not exist in database.")
         user_incomings = [] if user["incoming"] is None else user["incoming"]
         incomings_list = list()
         for item in user_incomings:
             requested_user_id = user_collection.find_one({"_id": item["user_id"]})[
                 "userid"
             ]
-            requested_project_name = project_collection.find_one(
-                {"_id": item["project_id"]}
-            )["projectTitle"]
-            requested_project_id = project_collection.find_one(
-                {"_id": item["project_id"]}
-            )["_id"]
-            requested_project_owner = project_collection.find_one(
-                {"_id": item["project_id"]}
-            )["owner"]
+            project = project_collection.find_one({"_id": item["project_id"]})
+            requested_project_name = project["projectTitle"]
+            requested_project_id = project["_id"]
+            requested_project_owner = project["owner"]
             incomings_list.append(
                 {
                     "user": requested_user_id,
@@ -805,17 +813,17 @@ class NotificationsHandler:
                 }
         """
         user = user_collection.find_one({"_id": user_id})
+        if user == None:
+            raise ValueError("User is not exist in database.")
         user_outgoings = [] if user["outgoing"] is None else user["outgoing"]
         outgoings_list = list()
         for item in user_outgoings:
-            print("Item _++++++______________", type(item))
             requested_project_name = project_collection.find_one({"_id": item})[
                 "projectTitle"
             ]
-            requested_project_id = project_collection.find_one({"_id": item})["_id"]
-            requested_project_owner = project_collection.find_one({"_id": item})[
-                "owner"
-            ]
+            project = project_collection.find_one({"_id": item})
+            requested_project_id = project["_id"]
+            requested_project_owner = project["owner"]
             outgoings_list.append(
                 {
                     "status": "Ongoing",
@@ -842,8 +850,12 @@ class NotificationsHandler:
                 OWNER_ID (bson.object.ObjectId)
         """
         user = user_collection.find_one({"_id": project_info["USER_ID"]})
+        if user == None:
+            raise ValueError("User is not exist in database.")
         contribution_list = user["contributions"]
+        ## add project to user contribution list
         contribution_list.append(project_info["PROJECT_ID"])
+        ## add project to user notification bucket
         bucket = user["notification_bucket"]
         bucket.append(
             {
@@ -852,6 +864,7 @@ class NotificationsHandler:
             }
         )
         user_outgoing = user["outgoing"]
+        ## remove project from user outgoing list
         user_outgoing.remove(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
             {"_id": project_info["USER_ID"]},
@@ -862,8 +875,11 @@ class NotificationsHandler:
                     "notification_bucket": bucket,
                 }
             },
+            upsert=False
         )
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
+        if owner == None:
+            raise ValueError("Project owner is not exist in database.")
         incoming_list = owner["incoming"]
         incoming_list.remove(
             {
@@ -901,6 +917,8 @@ class NotificationsHandler:
                 OWNER_ID (bson.object.ObjectId)
         """
         user = user_collection.find_one({"_id": project_info["USER_ID"]})
+        if user == None:
+            raise ValueError("User not exist in database.")
         bucket = user["notification_bucket"]
         bucket.append(
             {
@@ -918,8 +936,11 @@ class NotificationsHandler:
                     "notification_bucket": bucket,
                 }
             },
+            upsert = False
         )
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
+        if owner == None:
+            raise ValueError("Project Owner is not exist in database.")
         incoming_list = owner["incoming"]
         incoming_list.remove(
             {
@@ -956,6 +977,8 @@ class NotificationsHandler:
             status (bool):
         """
         user = user_collection.find_one({"_id": user_id})
+        if user == None:
+            raise ValueError("User not exist in database.")
         contribution_list = user["contributions"]
         if status:
             contribution_list.append(project_id)
