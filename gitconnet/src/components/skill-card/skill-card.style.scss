@@ -1,0 +1,28 @@
+.skill-card {
+  background-color: #e0e5ec;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
+    -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border-radius: 5%;
+  height: 155px;
+  width: 140px;
+
+  .skill-svg {
+    height: 128px;
+    width: 128px;
+  }
+
+  .skill-name {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .cancel-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}

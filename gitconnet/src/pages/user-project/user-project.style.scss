@@ -1,0 +1,241 @@
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  .text-card {
+    width: 85%;
+  }
+}
+
+.projects-section {
+  .card-list {
+    .project-card-view {
+      .card-grid {
+        width: min-content;
+        justify-content: space-evenly;
+      }
+    }
+  }
+}
+
+.edit-project-section {
+  .card {
+    height: 550px;
+    border-radius: 5%;
+
+    .title-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .title-input {
+        .card {
+          width: 400px;
+          height: 40px;
+          border-radius: 12%;
+          padding-left: 10px;
+        }
+      }
+
+      .title-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+
+    .discription-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .discription-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+
+      .discription-input {
+        .card {
+          width: 400px;
+          height: 150px;
+          border-radius: 12%;
+          padding-left: 10px;
+        }
+      }
+    }
+
+    .opening-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .opening-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+
+      .opening-input {
+        .card {
+          width: 400px;
+          height: 40px;
+          border-radius: 10%;
+          padding-left: 10px;
+        }
+      }
+    }
+
+    .add-new-skill {
+      .add-new-skill-input {
+        .card {
+          border-radius: 10%;
+          padding: 10px;
+        }
+      }
+    }
+  }
+
+  .custom-save {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.add-project-section {
+  .card {
+    height: 550px;
+    border-radius: 5%;
+
+    .title-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .dropdown {
+        width: 400px;
+        background-color: #e0e5ec;
+      }
+
+      .title-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+
+    .discription-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .discription-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+
+      .discription-input {
+        .card {
+          width: 400px;
+          height: 150px;
+          border-radius: 12%;
+          padding-left: 10px;
+        }
+      }
+    }
+
+    .opening-section {
+      display: flex;
+      justify-content: space-evenly;
+
+      .opening-card {
+        .card {
+          width: 180px;
+          height: 40px;
+          border-radius: 10%;
+          h3 {
+            text-align: center;
+            margin-top: 10px;
+          }
+        }
+      }
+
+      .opening-input {
+        .card {
+          width: 400px;
+          height: 40px;
+          border-radius: 10%;
+          padding-left: 10px;
+        }
+      }
+    }
+
+    .add-new-skill {
+      .add-new-skill-input {
+        .card {
+          border-radius: 10%;
+          padding: 10px;
+        }
+      }
+    }
+  }
+}
+
+.inner-header {
+  text-align: center;
+  position: sticky;
+  z-index: 997;
+}
+
+.user-project-edit-skill {
+  .vertical-scroll {
+    .card-grid {
+      padding: 7px;
+      width: auto;
+      .card {
+        width: 170px;
+      }
+    }
+  }
+}
+
+.add-new-skill {
+  .card {
+    border-radius: 25%;
+    height: 40px;
+  }
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.add-remove-project {
+  .card-grid {
+    width: min-content;
+    justify-content: space-evenly;
+  }
+}

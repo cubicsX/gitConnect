@@ -1,0 +1,16 @@
+.project-edit-skill {
+  .card {
+    padding: 10px;
+    display: flex;
+    height: 40px;
+    width: auto;
+    justify-content: space-between;
+    span {
+      position: relative;
+      top: 2px;
+      padding: 7px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+  }
+}

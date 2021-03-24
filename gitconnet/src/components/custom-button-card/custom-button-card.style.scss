@@ -1,0 +1,56 @@
+.custom-button-card {
+  background-color: #e0e5ec;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
+    -9px -9px 16px rgba(255, 255, 255, 0.5);
+  border-radius: 5%;
+  height: 80px;
+  width: 80px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(-100%);
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.13) 77%,
+      rgba(255, 255, 255, 0.5) 92%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+  }
+
+  &:hover::after {
+    opacity: 1;
+    top: 0;
+    left: 0;
+    transform: translateX(0);
+    transition-property: transform, opacity;
+    transition-duration: 0.7s, 0.15s;
+    transition-timing-function: ease;
+    outline: none;
+  }
+
+  img {
+    padding: 20px;
+    height: 64px;
+    width: 64px;
+  }
+}
+
+@font-face {
+  font-family: 'shinsenmedium';
+  src: url('../../media/fonts/shinsen-medium-webfont.woff2') format('woff2'),
+       url('../../media/fonts/shinsen-medium-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}

@@ -1,0 +1,15 @@
+.main-page {
+  .main-background {
+    h1 {
+      color: black;
+      display: flex;
+      justify-content: center;
+      padding-top: 150px;
+    }
+  }
+  .login-button {
+    display: flex;
+    justify-content: center;
+    padding-top: 250px;
+  }
+}
