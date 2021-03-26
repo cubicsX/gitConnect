@@ -37,7 +37,7 @@ const ProjectCardView = (props) => {
       <div className="opening-block">
         <Card>
           <span className="opening-number">
-            Openings Available: {props.projectOpening}
+            Openings Available: {props.projectOpenings}
           </span>
         </Card>
       </div>

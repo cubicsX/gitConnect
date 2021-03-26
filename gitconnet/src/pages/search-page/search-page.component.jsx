@@ -219,22 +219,21 @@ class SearchPage extends React.Component {
     // filter projects that contains searchQuery string and put search skill to
     // beginning of skills array using swapping.
     // remove the function below
-    const filteredProjects = allProjects.filter((project) => {
-      var element_index = project.projectSkills.indexOf(
-        searchQuery.toLowerCase().trim()
-      );
-      console.log(element_index);
-      if (element_index !== -1) {
-        return ([
-          project.projectSkills[0],
-          project.projectSkills[element_index],
-        ] = [project.projectSkills[element_index], project.projectSkills[0]]);
-      }
-    });
+    // const filteredProjects = allProjects.filter((project) => {
+    //   var element_index = project.projectSkills.indexOf(
+    //     searchQuery.toLowerCase().trim()
+    //   );
+    //   console.log(element_index);
+    //   if (element_index !== -1) {
+    //     return ([
+    //       project.projectSkills[0],
+    //       project.projectSkills[element_index],
+    //     ] = [project.projectSkills[element_index], project.projectSkills[0]]);
+    //   }
+    // });
 
     const searchQueryLength = this.state.searchQuery.length;
-    const filteredProjectLength = filteredProjects.length;
-
+    const filteredProjectLength = this.state.allProjects.length;
     return (
       <div className="search-page">
         <div className="search-bar">
@@ -252,13 +251,14 @@ class SearchPage extends React.Component {
             filteredProjectLength !== 0 ? (
               <VerticalScroll height="600px">
                 <CardList>
-                  {filteredProjects.map((project) => {
+                  {this.state.allProjects.map((project) => {
                     this.resetKey();
                     return (
                       <ProjectCardView
                         projectTitle={project.projectTitle}
                         projectDescription={project.projectDescription}
                         projectSkills={project.projectSkills}
+                        projectOpenings={project.projectOpenings}
                       >
                         <CardGrid gridColumn="1fr 1fr 1fr">
                           {this.renderBookmark(project.bookmark, project.key)}
@@ -276,11 +276,11 @@ class SearchPage extends React.Component {
                 </CardList>
               </VerticalScroll>
             ) : (
-                <h2 className="search-info">No Projects Found</h2>
-              )
+              <h2 className="search-info">No Projects Found</h2>
+            )
           ) : (
-              <h2 className="search-info">Search Something</h2>
-            )}
+            <h2 className="search-info">Search Something</h2>
+          )}
         </Card>
       </div>
     );

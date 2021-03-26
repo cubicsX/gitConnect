@@ -86,14 +86,17 @@ class StoreUser:
             return str(user.inserted_id)
         else:
             ## We also update user github details here
-            user_collection.find_one_and_update({"_id": user["_id"]},{
-                "$set": {
-                    "username": user_info["username"],
-                    "userid": user_info["userid"],
-                    "avatar": user_info["avatar"],
-                    "githubURL": user_info["githubURL"],
-                }
-            })
+            user_collection.find_one_and_update(
+                {"_id": user["_id"]},
+                {
+                    "$set": {
+                        "username": user_info["username"],
+                        "userid": user_info["userid"],
+                        "avatar": user_info["avatar"],
+                        "githubURL": user_info["githubURL"],
+                    }
+                },
+            )
             return str(user["_id"])
 
     @staticmethod
@@ -123,7 +126,7 @@ class SearchPageHandler:
     @staticmethod
     def parse_string_AND(query):
         search = search_collection.find_one({"_id": SEARCH_ID})
-        keywords = query.split(',')
+        keywords = query.split(",")
         try:
             project_set = set(search[keywords[0]])
         except KeyError:
@@ -142,7 +145,7 @@ class SearchPageHandler:
     @staticmethod
     def parse_string_OR(query):
         search = search_collection.find_one({"_id": SEARCH_ID})
-        keywords = query.split(',')
+        keywords = query.split(",")
         try:
             project_set = set(search[keywords[0]])
         except KeyError:
@@ -159,10 +162,11 @@ class SearchPageHandler:
         return project_set
 
     @staticmethod
-    def parse_string_NOT(projects,query,status):
+    def parse_string_NOT(projects, query, status):
         search = search_collection.find_one({"_id": SEARCH_ID})
+        print(projects, status)
         if status:
-            keywords = query.split(',')
+            keywords = query.split(",")
             project_set = set(projects)
             for key in keywords:
                 try:
@@ -172,9 +176,10 @@ class SearchPageHandler:
                 except AttributeError:
                     continue
         else:
-            keywords = query.split(',')
-            all_projects = set(search.keys()) - set(keywords)
+            keywords = query.split(",")
+            all_projects = set(search.keys()) - set(keywords) - set(["_id"])
             project_set = set()
+            # print(all_projects)
             for project_title in all_projects:
                 project_set.update(search[project_title])
         return project_set
@@ -223,32 +228,45 @@ class SearchPageHandler:
         user_bookmarks = user["bookmarks"]
         user_contributions = user["contributions"]
         user_outgoing = user["outgoing"]
-
-        tokenize_strings = search_info.split()
+        tokenize_strings = search_info["search_query"].split()
         flag = False
         fetched_project = list()
         for query_token in tokenize_strings:
-            keywords = query_token.split(':')
-            if keywords[0][1:] == 'and':
+            keywords = query_token.split(":")
+            print(keywords)
+            if keywords[0][1:] == "and":
                 if flag:
-                    raise ValueError("flag is set to True. $and and $or in single query.")
+                    raise ValueError(
+                        "flag is set to True. $and and $or in single query."
+                    )
                 else:
                     flag = True
-                    fetched_project += parse_string_AND(keywords[1])
-            elif keywords[0][1:] == 'or':
+                    fetched_project += SearchPageHandler.parse_string_AND(keywords[1])
+            elif keywords[0][1:] == "or":
                 if flag:
-                    raise ValueError("flag is set to True. $and and $or in single query.")
+                    raise ValueError(
+                        "flag is set to True. $and and $or in single query."
+                    )
                 else:
                     flag = True
-                    fetched_project += parse_string_OR(keywords[1])
-            elif keywords[0][1:] == 'not':
+                    fetched_project += SearchPageHandler.parse_string_OR(keywords[1])
+            elif keywords[0][1:] == "not":
+                print(fetched_project, "^&^%&%^&%^&%^&%&")
                 if len(fetched_project) == 0:
-                    fetched_project = list(parse_string_NOT([],keywords[1],status=False))
+                    fetched_project = list(
+                        SearchPageHandler.parse_string_NOT(
+                            [], keywords[1], status=False
+                        )
+                    )
                 else:
-                    fetched_project = list(parse_string_NOT(fetched_project,keywords[1],status=True))
-            elif keywords[0][1:] == 'exact':
+                    fetched_project = list(
+                        SearchPageHandler.parse_string_NOT(
+                            fetched_project, keywords[1], status=True
+                        )
+                    )
+            elif keywords[0][1:] == "exact":
                 raise NotImplementedError("methos is not implemeneted.")
-            elif keywords[0][1:] == 'near':
+            elif keywords[0][1:] == "near":
                 raise NotImplementedError("methos is not implemeneted.")
             else:
                 # single keyword search algo here.
@@ -261,10 +279,12 @@ class SearchPageHandler:
                 print("No Keyword Found.")
         print(fetched_project)
         project_id_list = fetched_project
+        print(project_id_list, "project_id_list")
         if project_id_list != None:
             projects_list = list()
             for id in project_id_list:
                 project = project_collection.find_one({"_id": id})
+                print(project, "project")
                 if project == None:
                     continue
                 if user_bookmarks == None:
@@ -276,6 +296,7 @@ class SearchPageHandler:
                 else:
                     project["contribution"] = True if id in user_outgoing else False
                 projects_list.append(project)
+            print(projects_list, "projects_list")
             return projects_list
         else:
             return []
@@ -288,9 +309,11 @@ class SearchPageHandler:
             "search_query": search_query,
         }
         project_list = SearchPageHandler.fetch_project(search_info=search_info)
+        print(project_list, "project_list")
         for project in project_list:
             project["_id"] = str(project["_id"])
             project["owner"] = str(project["owner"])
+        print(project_list, "project_list_final")
         return project_list
 
 
@@ -337,12 +360,7 @@ class ProjectHandler:
 
             value_list.append(project.inserted_id)
             search_collection.find_one_and_update(
-                {"_id": SEARCH_ID}, {
-                    "$set": {
-                        skill: value_list
-                    }
-                },
-                upsert=False
+                {"_id": SEARCH_ID}, {"$set": {skill: value_list}}, upsert=False
             )
 
     @staticmethod
@@ -985,7 +1003,7 @@ class NotificationsHandler:
                     "notification_bucket": bucket,
                 }
             },
-            upsert=False
+            upsert=False,
         )
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
         if owner == None:
@@ -1046,7 +1064,7 @@ class NotificationsHandler:
                     "notification_bucket": bucket,
                 }
             },
-            upsert = False
+            upsert=False,
         )
         owner = user_collection.find_one({"_id": project_info["OWNER_ID"]})
         if owner == None:
