@@ -121,6 +121,65 @@ class StoreUser:
 
 class SearchPageHandler:
     @staticmethod
+    def parse_string_AND(query):
+        search = search_collection.find_one({"_id": SEARCH_ID})
+        keywords = query.split(',')
+        try:
+            project_set = set(search[keywords[0]])
+        except KeyError:
+            project_set = set()
+        except AttributeError:
+            project_set = set()
+        for key in keywords[1:]:
+            try:
+                project_set = project_set & set(search[key])
+            except KeyError:
+                continue
+            except AttributeError:
+                continue
+        return list(project_set)
+
+    @staticmethod
+    def parse_string_OR(query):
+        search = search_collection.find_one({"_id": SEARCH_ID})
+        keywords = query.split(',')
+        try:
+            project_set = set(search[keywords[0]])
+        except KeyError:
+            project_set = set()
+        except AttributeError:
+            project_set = set()
+        for key in keywords[1:]:
+            try:
+                project_set = project_set | set(search[key])
+            except KeyError:
+                continue
+            except AttributeError:
+                continue
+        return project_set
+
+    @staticmethod
+    def parse_string_NOT(projects,query,status):
+        search = search_collection.find_one({"_id": SEARCH_ID})
+        if status:
+            keywords = query.split(',')
+            project_set = set(projects)
+            for key in keywords:
+                try:
+                    project_set = project_set - set(search[key])
+                except KeyError:
+                    continue
+                except AttributeError:
+                    continue
+        else:
+            keywords = query.split(',')
+            all_projects = set(search.keys()) - set(keywords)
+            project_set = set()
+            for project_title in all_projects:
+                project_set.update(search[project_title])
+        return project_set
+
+    @staticmethod
     def fetch_project(search_info):
         """
         fetch projects containing search_query in tags.
@@ -138,6 +197,25 @@ class SearchPageHandler:
         Returns:
             project_list (list[:dict])
         """
+        """[summary]
+        This is a prototype for boolean search algorithm.
+        supported boolean keyword:
+            - and : project must contain all keywords.
+            - or : project contain any of keywords.
+            - not : project must not contain keywords.
+            - exact : fetch project with exact keyword match.
+            - near : fetch pproject with near keyword match.
+            ( by default, all project fetch is done on basis of exact match of keyword. )
+
+            `NEAR` TOKEN IMPLEMENTATION IS NOT DONE YET.
+
+        Examples:
+            1) $and:python3,ml $not:ai
+            2) $or:python2,script $not:ml
+
+        Args:
+            search_query (string): string contains keywords with boolean text.
+        """
         search = search_collection.find_one({"_id": SEARCH_ID})
         user = user_collection.find_one({"_id": search_info["USER_ID"]})
         if user == None:
@@ -145,12 +223,44 @@ class SearchPageHandler:
         user_bookmarks = user["bookmarks"]
         user_contributions = user["contributions"]
         user_outgoing = user["outgoing"]
-        try:
-            project_id_list = search[search_info["search_query"]]
-        except KeyError:
-            project_id_list = None
-        except AttributeError:
-            project_id_list = None
+
+        tokenize_strings = search_info.split()
+        flag = False
+        fetched_project = list()
+        for query_token in tokenize_strings:
+            keywords = query_token.split(':')
+            if keywords[0][1:] == 'and':
+                if flag:
+                    raise ValueError("flag is set to True. $and and $or in single query.")
+                else:
+                    flag = True
+                    fetched_project += parse_string_AND(keywords[1])
+            elif keywords[0][1:] == 'or':
+                if flag:
+                    raise ValueError("flag is set to True. $and and $or in single query.")
+                else:
+                    flag = True
+                    fetched_project += parse_string_OR(keywords[1])
+            elif keywords[0][1:] == 'not':
+                if len(fetched_project) == 0:
+                    fetched_project = list(parse_string_NOT([],keywords[1],status=False))
+                else:
+                    fetched_project = list(parse_string_NOT(fetched_project,keywords[1],status=True))
+            elif keywords[0][1:] == 'exact':
+                raise NotImplementedError("methos is not implemeneted.")
+            elif keywords[0][1:] == 'near':
+                raise NotImplementedError("methos is not implemeneted.")
+            else:
+                # single keyword search algo here.
+                try:
+                    fetched_project = search[search_info["search_query"]]
+                except KeyError:
+                    fetched_project = None
+                except AttributeError:
+                    fetched_project = None
+                print("No Keyword Found.")
+        print(fetched_project)
+        project_id_list = fetched_project
         if project_id_list != None:
             projects_list = list()
             for id in project_id_list:
