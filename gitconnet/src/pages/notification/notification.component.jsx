@@ -136,6 +136,7 @@ class Notification extends React.Component {
                     this.state.collaborations.map((collaborations) => (
                       <CollabrationNotificationCard
                         user={collaborations.user}
+                        user_id={collaborations.user_id}
                         requestedProject={collaborations.requestedProject}
                       >
                         <CustomButton

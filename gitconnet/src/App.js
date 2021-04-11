@@ -10,20 +10,21 @@ import React, { useState } from 'react';
 import { BASE_URL } from './constant'
 import { Switch, BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
+import PublicProfile from './pages/public-profile/public-profile.component';
 
 {/* < Route {...rest} component={(props) => (
   auth ? (
-    console.log("True")
+    
     // <Component {...props} />
   ) : (
-      console.log("False")
+      
 
       // <Redirect to="/" />
     )
 )
 } /> */}
 function PrivateRoute({ auth, component: Component, ...rest }) {
-  console.log(auth)
+
   return (
     <Route
       {...rest}
@@ -31,12 +32,12 @@ function PrivateRoute({ auth, component: Component, ...rest }) {
         auth === true ? (
           <Component {...props} />
         ) : (
-            <Redirect
-              to={{
-                pathname: "/"
-              }}
-            />
-          )
+          <Redirect
+            to={{
+              pathname: "/"
+            }}
+          />
+        )
       }
     />
   )
@@ -67,13 +68,13 @@ class App extends React.Component {
       withCredentials: true
     })
     if (response.data.status === "OK") {
-      // console.log(`In IF ${response.data.status}`)
+      // 
       this.setState({
         login: true
       })
     }
     else if (response.data.status === "ERROR") {
-      // console.log(`In ELSE ${response.data.status}`)
+      // 
       this.setState({
         login: false
       })
@@ -93,6 +94,7 @@ class App extends React.Component {
           <PrivateRoute auth={this.state.login} exact path="/profile" component={UserProfile} />
           <PrivateRoute auth={this.state.login} exact path="/projects" component={UserProject} />
           <PrivateRoute auth={this.state.login} exact path="/notifications" component={Notification} />
+          <PrivateRoute auth={this.state.login} exact path="/public-profile/:user_id" component={PublicProfile} />
           <Route component={PageNotFound} />
         </Switch>
       </Router>

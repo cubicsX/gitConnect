@@ -75,6 +75,7 @@ class UserProject extends React.Component {
       url: `${BASE_URL}/fetch-project-list`,
       withCredentials: true
     })
+
     this.setState({
       "github_projects": response.data
     })
@@ -86,6 +87,7 @@ class UserProject extends React.Component {
     this.setState({
       "projects": list_project.data
     })
+
   }
   async save_details() {
     const response = await axios({
@@ -128,7 +130,7 @@ class UserProject extends React.Component {
     this.successNotification();
   }
   async remove_details(id) {
-    console.log(this.state.projects[id]["_id"])
+
     const response = await axios({
       method: "DELETE",
       url: `${BASE_URL}/project`,
@@ -480,13 +482,13 @@ class UserProject extends React.Component {
         <VerticalScroll height="600px">
           <CardList>
             {
-              (console.log(this.state),
+              (
                 this.state.projects.map((project, project_id) => (
                   <ProjectCardView
                     projectTitle={project.projectTitle}
                     projectDescription={project.projectDescription}
                     projectSkills={project.projectSkills}
-                    projectOpening={project.projectOpenings}
+                    projectOpenings={project.projectOpenings}
                   >
                     <CardGrid gridColumn="1fr 1fr">
                       <CustomButton

@@ -1,0 +1,268 @@
+.user-profile {
+  .card {
+    border-radius: 2%;
+    padding: 10px;
+  }
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  // position: sticky;
+  // z-index: 998;
+  // top: 10%;
+
+  .text-card {
+    width: 85%;
+  }
+}
+
+.general-section {
+  .inner-header {
+    text-align: center;
+    position: sticky;
+    z-index: 997;
+  }
+  .card {
+    height: 600px;
+  }
+}
+
+.user-contribution,
+.user-bookmark {
+  .inner-header {
+    text-align: center;
+    position: sticky;
+    z-index: 997;
+  }
+  .card {
+    min-height: 150px;
+    max-height: 450px;
+  }
+}
+
+.modify-grid {
+  .card-grid {
+    width: auto;
+    .custom-button-card {
+      height: fit-content;
+      width: fit-content;
+    }
+  }
+}
+
+.add-new-skill {
+  .card {
+    border-radius: 25%;
+    height: 40px;
+  }
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.edit-profile {
+  .vertical-scroll {
+    padding-left: 2px;
+    .edit-username {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-username-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-username-value {
+        .card {
+          width: 470px;
+          height: 20px;
+          .custom-input {
+            padding-top: 1px;
+          }
+        }
+      }
+    }
+    .edit-avatar {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-avatar-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-avatar-value {
+        .card {
+          width: 470px;
+          height: 20px;
+        }
+        .custom-input {
+          padding-top: 1px;
+        }
+      }
+    }
+    .edit-email {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-email-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-email-value {
+        .card {
+          width: 470px;
+          height: 20px;
+        }
+        .custom-input {
+          padding-top: 1px;
+        }
+      }
+    }
+    .edit-github {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-github-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-github-value {
+        .card {
+          width: 470px;
+          height: 20px;
+        }
+        .custom-input {
+          padding-top: 1px;
+        }
+      }
+    }
+    .edit-linkedin {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-linkedin-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-linkedin-value {
+        .card {
+          width: 470px;
+          height: 20px;
+        }
+        .custom-input {
+          padding-top: 1px;
+        }
+      }
+    }
+    .edit-stackoverflow {
+      display: flex;
+      justify-content: space-evenly;
+      .edit-stackoverflow-title {
+        .card {
+          width: 150px;
+          height: 20px;
+        }
+      }
+      .edit-stackoverflow-value {
+        .card {
+          width: 470px;
+          height: 20px;
+        }
+        .custom-input {
+          padding-top: 1px;
+        }
+      }
+    }
+  }
+}
+
+.display-profile {
+  .user-avatar {
+    display: flex;
+    justify-content: center;
+    .card {
+      width: fit-content;
+      height: fit-content;
+      img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  }
+  .username {
+    display: flex;
+    justify-content: space-evenly;
+    .username-title {
+      .card {
+        width: 150px;
+        height: 20px;
+      }
+    }
+    .username-value {
+      .card {
+        width: 470px;
+        height: 20px;
+      }
+    }
+  }
+  .userid {
+    display: flex;
+    justify-content: space-evenly;
+    .userid-title {
+      .card {
+        width: 150px;
+        height: 20px;
+      }
+    }
+    .userid-value {
+      .card {
+        width: 470px;
+        height: 20px;
+      }
+    }
+  }
+  .user-email {
+    display: flex;
+    justify-content: space-evenly;
+    .user-email-title {
+      .card {
+        width: 150px;
+        height: 20px;
+      }
+    }
+    .user-email-value {
+      .card {
+        width: 470px;
+        height: 20px;
+      }
+    }
+  }
+  .modify-grid {
+    padding-left: 65px;
+  }
+}
+
+.edit-skill {
+  .modify-grid {
+    .remove-skill {
+      .cancel-button {
+        position: absolute;
+        margin-left: 10px;
+        z-index: 10;
+      }
+    }
+  }
+}
+
+.remove-skill-card {
+  display: flex;
+  height: 155px;
+  width: 140px;
+  .cancel-button {
+    position: absolute;
+  }
+}

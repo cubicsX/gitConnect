@@ -1,5 +1,5 @@
 import React from "react";
-import "./user-profile.style.scss";
+import "./public-profile.style.scss";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,8 +57,9 @@ import ContributionCard from "../../components/contribution-card/contribution-ca
 import axios from "axios";
 import { BASE_URL } from "../../constant";
 
-class UserProfile extends React.Component {
+class PublicProfile extends React.Component {
   constructor(props) {
+
     super(props);
 
     this.state = {
@@ -88,10 +89,12 @@ class UserProfile extends React.Component {
     const response = await axios({
       method: "GET",
       url: `${BASE_URL}/user-view`,
+      params: {
+        "user_id": this.props.match.params["user_id"]
+      },
       withCredentials: true
     })
     let user_dict = response.data
-
     for (let index = 0; index < user_dict["skills"].length; index++) {
       let ele = user_dict["skills"][index]
       user_dict["skills"][index] = this.mapSkill(ele)
@@ -774,7 +777,7 @@ class UserProfile extends React.Component {
       <div className="user-profile">
         <div className="profile-header">
           <TextCard text="User Profile" />
-          {this.renderSaveButton()}
+          {/* {this.renderSaveButton()} */}
         </div>
         <br />
         <br />
@@ -804,12 +807,12 @@ class UserProfile extends React.Component {
                       projectTitle={bookmark.projectTitle}
                       projectDescription={bookmark.projectDescription}
                     >
-                      <CustomButton
+                      {/* <CustomButton
                         title="Remove"
                         onClick={() => {
                           this.remove_bookmark(id)
                         }}
-                      />
+                      /> */}
                     </BookmarkCard>
                   ))}
                 </CardGrid>
@@ -840,4 +843,4 @@ class UserProfile extends React.Component {
   }
 }
 
-export default UserProfile;
+export default PublicProfile;

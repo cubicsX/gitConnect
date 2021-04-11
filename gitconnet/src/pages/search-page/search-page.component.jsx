@@ -20,17 +20,7 @@ class SearchPage extends React.Component {
 
     this.state = {
       searchQuery: "",
-      allProjects: [
-        {
-          user: "purvesh",
-          projectTitle: "gitConnect-1",
-          projectDescription: "This is small project for testing.",
-          projectSkills: ["python", "aws", "babel", "aws", "babel"],
-          projectGithubURL: "https://github.com/",
-          bookmark: false,//aa nathi
-          contribution: false,// aa nathi
-        },
-      ],
+      allProjects: [],
     };
   }
 
@@ -41,7 +31,7 @@ class SearchPage extends React.Component {
   }
 
   async add_bookmark(id) {
-    console.log(this.state.allProjects[id])
+
 
     const response = await axios({
       method: "POST",
@@ -65,7 +55,7 @@ class SearchPage extends React.Component {
     this.trueBookmarkNotification()
   }
   async remove_bookmark(id) {
-    console.log(this.state.allProjects[id])
+
 
     const response = await axios({
       method: "DELETE",
@@ -90,7 +80,7 @@ class SearchPage extends React.Component {
   }
 
   async add_contribution(id) {
-    console.log(this.state.allProjects[id])
+
 
     const response = await axios({
       method: "POST",
@@ -107,7 +97,7 @@ class SearchPage extends React.Component {
         ...this.state.allProjects.slice(0, id),
         {
           ...this.state.allProjects[id],
-          contribution: !this.state.allProjects[id].contribution,
+          contribution: 1,
         },
         ...this.state.allProjects.slice(id + 1),
       ],
@@ -115,7 +105,7 @@ class SearchPage extends React.Component {
     this.trueRequestedNotification()
   }
   async remove_contribution(id) {
-    console.log(this.state.allProjects[id])
+
 
     const response = await axios({
       method: "DELETE",
@@ -132,7 +122,7 @@ class SearchPage extends React.Component {
         ...this.state.allProjects.slice(0, id),
         {
           ...this.state.allProjects[id],
-          contribution: !this.state.allProjects[id].contribution,
+          contribution: 0,
         },
         ...this.state.allProjects.slice(id + 1),
       ],
@@ -143,7 +133,7 @@ class SearchPage extends React.Component {
   renderBookmark = (isBookmark, projectID) => {
     var id = projectID - 1;
     if (isBookmark) {
-      console.log("Key: ", id);
+
       return (
         <CustomButton
           title="BookMarked"
@@ -151,7 +141,7 @@ class SearchPage extends React.Component {
         />
       );
     } else {
-      console.log("Key: ", id);
+
       return (
         <CustomButton
           title="BookMark"
@@ -162,21 +152,33 @@ class SearchPage extends React.Component {
   };
 
   renderRequested = (isRequested, projectID) => {
+
     var id = projectID - 1;
-    if (isRequested) {
-      return (
-        <CustomButton
-          title="Requested"
-          onClick={() => this.remove_contribution(id)}
-        />
-      );
-    } else {
+    if (isRequested === 0) {
       return (
         <CustomButton
           title="Do Contribution"
           onClick={() => this.add_contribution(id)}
         />
       );
+
+    } else if (isRequested === 1) {
+      return (
+        <CustomButton
+          title="Requested"
+          onClick={() => this.remove_contribution(id)}
+        />
+      );
+    }
+    else if (isRequested === 2) {
+      return (
+        <CustomButton
+          title="Accepted"
+        />
+      );
+    }
+    else {
+      throw new Error(`No Such Values exists line no 190 ${isRequested}`)
     }
   };
 
@@ -208,6 +210,7 @@ class SearchPage extends React.Component {
       },
       withCredentials: true
     })
+
     this.setState({
       "allProjects": response.data
     })
@@ -223,7 +226,7 @@ class SearchPage extends React.Component {
     //   var element_index = project.projectSkills.indexOf(
     //     searchQuery.toLowerCase().trim()
     //   );
-    //   console.log(element_index);
+    //   
     //   if (element_index !== -1) {
     //     return ([
     //       project.projectSkills[0],
@@ -268,6 +271,7 @@ class SearchPage extends React.Component {
                               window.open(project.projectGithubURL, "_blank")
                             }
                           />
+
                           {this.renderRequested(project.contribution, project.key)}
                         </CardGrid>
                       </ProjectCardView>
