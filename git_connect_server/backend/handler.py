@@ -17,9 +17,6 @@ search_collection = client["gitconnect"]["search"]
 SEARCH_ID = ObjectId("603b9746eaebc306575fa974")
 
 
-print(GITHUB_CLIENT_ID, GITHUB_SECRET)
-
-
 class ExchangeCode:
     @staticmethod
     def exchange_code(code):
@@ -40,7 +37,6 @@ def get_access_token(request=None):
     if request is None:
         request = get_request()
     access_token = request.session["access_token"]
-    print(access_token)
     return access_token
 
 
@@ -127,44 +123,89 @@ class SearchPageHandler:
     def parse_string_AND(query):
         search = search_collection.find_one({"_id": SEARCH_ID})
         keywords = query.split(",")
-        try:
-            project_set = set(search[keywords[0]])
-        except KeyError:
-            project_set = set()
-        except AttributeError:
-            project_set = set()
-        for key in keywords[1:]:
+        all_keys = list(search.keys())
+        selected_projects = set()
+        flag = False
+        ## generate new keywords_list
+        for query_keyword in keywords:
+            new_keywords = list()
+            for key in all_keys:
+                if query_keyword in key:
+                    new_keywords.append(key)
+            new_keywords = list(set(new_keywords))
             try:
-                project_set = project_set & set(search[key])
-            except KeyError:
+                project_set = search[new_keywords[0]]
+                for key in new_keywords[1:]:
+                    project_set += search[key]
+                project_set = list(set(project_set))
+                if flag:
+                    selected_projects = set(selected_projects) & set(project_set)
+                else:
+                    selected_projects = set(project_set)
+                    flag = True
+            except IndexError:
                 continue
-            except AttributeError:
-                continue
-        return list(project_set)
+        return list(set(selected_projects))
+        # try:
+        #     project_set = set(search[keywords[0]])
+        # except KeyError:
+        #     project_set = set()
+        # except AttributeError:
+        #     project_set = set()
+        # for key in keywords[1:]:
+        #     try:
+        #         project_set = project_set & set(search[key])
+        #     except KeyError:
+        #         continue
+        #     except AttributeError:
+        #         continue
+        # return list(project_set)
 
     @staticmethod
     def parse_string_OR(query):
         search = search_collection.find_one({"_id": SEARCH_ID})
         keywords = query.split(",")
-        try:
-            project_set = set(search[keywords[0]])
-        except KeyError:
-            project_set = set()
-        except AttributeError:
-            project_set = set()
-        for key in keywords[1:]:
+        all_keys = list(search.keys())
+        selected_projects = set()
+        flag = False
+        ## generate new keywords_list
+        for query_keyword in keywords:
+            new_keywords = list()
+            for key in all_keys:
+                if query_keyword in key:
+                    new_keywords.append(key)
+            new_keywords = list(set(new_keywords))
             try:
-                project_set = project_set | set(search[key])
-            except KeyError:
+                project_set = search[new_keywords[0]]
+                for key in new_keywords[1:]:
+                    project_set += search[key]
+                project_set = list(set(project_set))
+                if flag:
+                    selected_projects = set(selected_projects) | set(project_set)
+                else:
+                    selected_projects = set(project_set)
+                    flag = True
+            except IndexError:
                 continue
-            except AttributeError:
-                continue
-        return project_set
+        return list(set(selected_projects))
+        # try:
+        #     project_set = set(search[keywords[0]])
+        # except KeyError:
+        #     project_set = set()
+        # except AttributeError:
+        #     project_set = set()
+        # for key in keywords[1:]:
+        #     try:
+        #         project_set = project_set | set(search[key])
+        #     except KeyError:
+        #         continue
+        #     except AttributeError:
+        #         continue
+        # return project_set
 
     @staticmethod
     def parse_string_NOT(projects, query, status):
         search = search_collection.find_one({"_id": SEARCH_ID})
-        print(projects, status)
         if status:
             keywords = query.split(",")
             project_set = set(projects)
@@ -177,9 +218,8 @@ class SearchPageHandler:
                     continue
         else:
             keywords = query.split(",")
-            all_projects = set(search.keys()) - set(keywords) - set(["_id"])
+            all_projects = set(search.keys()) - set(keywords)
             project_set = set()
-            # print(all_projects)
             for project_title in all_projects:
                 project_set.update(search[project_title])
         return project_set
@@ -233,7 +273,6 @@ class SearchPageHandler:
         fetched_project = list()
         for query_token in tokenize_strings:
             keywords = query_token.split(":")
-            print(keywords)
             if keywords[0][1:] == "and":
                 if flag:
                     raise ValueError(
@@ -251,7 +290,6 @@ class SearchPageHandler:
                     flag = True
                     fetched_project += SearchPageHandler.parse_string_OR(keywords[1])
             elif keywords[0][1:] == "not":
-                print(fetched_project, "^&^%&%^&%^&%^&%&")
                 if len(fetched_project) == 0:
                     fetched_project = list(
                         SearchPageHandler.parse_string_NOT(
@@ -270,21 +308,47 @@ class SearchPageHandler:
                 raise NotImplementedError("methos is not implemeneted.")
             else:
                 # single keyword search algo here.
-                try:
-                    fetched_project = search[search_info["search_query"]]
-                except KeyError:
-                    fetched_project = None
-                except AttributeError:
-                    fetched_project = None
-                print("No Keyword Found.")
-        print(fetched_project)
+                # try:
+                #     fetched_project = search[search_info["search_query"]]
+                # except KeyError:
+                #     fetched_project = None
+                # except AttributeError:
+                #     fetched_project = None
+                #
+                keywords = search_info["search_query"].split(",")
+                if len(keywords) != 1:
+                    pass
+                    # return statement should be here.
+                all_keys = list(search.keys())
+                selected_projects = set()
+                flag = False
+                ## generate new keywords_list
+                for query_keyword in keywords:
+                    new_keywords = list()
+                    for key in all_keys:
+                        if query_keyword in key:
+                            new_keywords.append(key)
+                    new_keywords = list(set(new_keywords))
+                    try:
+                        project_set = search[new_keywords[0]]
+                        for key in new_keywords[1:]:
+                            project_set += search[key]
+                        project_set = list(set(project_set))
+                        if flag:
+                            selected_projects = set(selected_projects) | set(
+                                project_set
+                            )
+                        else:
+                            selected_projects = set(project_set)
+                            flag = True
+                    except IndexError:
+                        continue
+                    fetched_project = list(selected_projects)
         project_id_list = fetched_project
-        print(project_id_list, "project_id_list")
         if project_id_list != None:
             projects_list = list()
             for id in project_id_list:
                 project = project_collection.find_one({"_id": id})
-                print(project, "project")
                 if project == None:
                     continue
                 if user_bookmarks == None:
@@ -292,11 +356,25 @@ class SearchPageHandler:
                 else:
                     project["bookmark"] = True if id in user_bookmarks else False
                 if user_outgoing == None:
-                    project["contribution"] = False
+                    project_outgoing = False
                 else:
-                    project["contribution"] = True if id in user_outgoing else False
+                    project_outgoing = True if id in user_outgoing else False
+                if user_contributions == None:
+                    project_contribution = False
+                else:
+                    project_contribution = True if id in user_contributions else False
+                if not (project_outgoing) and not (project_contribution):
+                    project["contribution"] = 0  # Do Contribution
+
+                elif project_outgoing and not (project_contribution):
+                    project["contribution"] = 1  # Requested
+
+                elif not (project_outgoing) and project_contribution:
+                    project["contribution"] = 2  # Accepted
+
+                else:
+                    ValueError("This should be executed")
                 projects_list.append(project)
-            print(projects_list, "projects_list")
             return projects_list
         else:
             return []
@@ -309,11 +387,9 @@ class SearchPageHandler:
             "search_query": search_query,
         }
         project_list = SearchPageHandler.fetch_project(search_info=search_info)
-        print(project_list, "project_list")
         for project in project_list:
             project["_id"] = str(project["_id"])
             project["owner"] = str(project["owner"])
-        print(project_list, "project_list_final")
         return project_list
 
 
@@ -539,10 +615,10 @@ class UserHandler:
     @staticmethod
     def fetch_user(user_id):
         """
-        fuction returns user details of specified user_id.
+        function returns user details of specified user_id.
 
         Args:
-            user_id (bson.onject.ObjectId)
+            user_id (bson.object.ObjectId)
 
         Returns:
             dict: return dict contains following fields,
@@ -629,8 +705,11 @@ class UserHandler:
         )
 
     @staticmethod
-    def fetch_and_create_user_info():
-        user_object_id = ObjectId(get_user_object_id())
+    def fetch_and_create_user_info(user_id=None):
+        if user_id is None:
+            user_object_id = ObjectId(get_user_object_id())
+        else:
+            user_object_id = ObjectId(user_id)
         user_dict = UserHandler.fetch_user(user_id=user_object_id)
         return user_dict
 
@@ -907,16 +986,17 @@ class NotificationsHandler:
         user_incomings = [] if user["incoming"] is None else user["incoming"]
         incomings_list = list()
         for item in user_incomings:
-            requested_user_id = user_collection.find_one({"_id": item["user_id"]})[
-                "userid"
-            ]
+            requested_user = user_collection.find_one({"_id": item["user_id"]})
+            user = requested_user["userid"]
+            user_id = requested_user["_id"]
             project = project_collection.find_one({"_id": item["project_id"]})
             requested_project_name = project["projectTitle"]
             requested_project_id = project["_id"]
             requested_project_owner = project["owner"]
             incomings_list.append(
                 {
-                    "user": requested_user_id,
+                    "user": user,
+                    "user_id": user_id,
                     "requestedProject": requested_project_name,
                     "project_id": requested_project_id,
                     "project_owner": requested_project_owner,
@@ -1028,7 +1108,7 @@ class NotificationsHandler:
             "USER_ID": project_info["USER_ID"],
             "PROJECT_ID": project_info["PROJECT_ID"],
         }
-        NotificationsHandler.add_contribution(contribution_info=contribution_info)
+        # NotificationsHandler.add_contribution(contribution_info=contribution_info)
 
     @staticmethod
     def reject_incoming(project_info):
@@ -1090,7 +1170,7 @@ class NotificationsHandler:
             "USER_ID": project_info["USER_ID"],
             "PROJECT_ID": project_info["PROJECT_ID"],
         }
-        NotificationsHandler.remove_contribution(contribution_info=contribution_info)
+        # NotificationsHandler.remove_contribution(contribution_info=contribution_info)
 
     @staticmethod
     def handle_contribution(user_id, project_id, status):
@@ -1152,6 +1232,7 @@ class NotificationsHandler:
         incoming_list = NotificationsHandler.fetch_incoming(user_id=user_object_id)
         outgoing_list = NotificationsHandler.fetch_outgoing(user_id=user_object_id)
         for incoming in incoming_list:
+            incoming["user_id"] = str(incoming["user_id"])
             incoming["project_id"] = str(incoming["project_id"])
             incoming["project_owner"] = str(incoming["project_owner"])
         for outgoing in outgoing_list:

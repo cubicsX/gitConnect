@@ -32,14 +32,14 @@ class GithubOAuth(APIView):
 
 class TestEndPoint(APIView):
     def get(self, request: Request):
-        print(request.session.items())
+
         return Response()
 
 
 class PageValidation(APIView):
     def post(self, request: Request):
         access_token = request.session.get("access_token", None)
-        print(access_token)
+
         if access_token is None:
             return Response(
                 data={
@@ -69,7 +69,7 @@ class GithubRepositoryList(APIView):
 class ListProject(APIView):
     def get(self, request: Request):
         project_list = ProjectHandler.fetch_and_get_list_of_owner_project()
-        print(project_list)
+
         return Response(data=project_list)
 
 
@@ -116,7 +116,8 @@ class ContributionView(APIView):
 
 class UserView(APIView):
     def get(self, request: Request):
-        user_dict = UserHandler.fetch_and_create_user_info()
+        user_id = request.GET.get("user_id", None)
+        user_dict = UserHandler.fetch_and_create_user_info(user_id=user_id)
         return Response(data=user_dict)
 
     def put(self, request: Request):
