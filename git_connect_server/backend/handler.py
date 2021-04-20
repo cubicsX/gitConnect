@@ -9,12 +9,18 @@ from django_middleware_global_request.middleware import get_request
 
 GITHUB_SECRET = os.environ.get("GITHUB_SECRET")
 GITHUB_CLIENT_ID = os.environ.get("GITHUB_ID")
+GITCONNECT_CLUSTER_PASS = os.environ.get("GITCONNECT_CLUSTER_PASS")
 
-client = MongoClient("localhost", 27017)
+class Connect(object):
+    @staticmethod    
+    def get_connection():
+        return MongoClient(f"mongodb+srv://gitconnect:{GITCONNECT_CLUSTER_PASS}@gitconnectcluster.ytua1.mongodb.net/test")
+
+client = Connect.get_connection()
 user_collection = client["gitconnect"]["user"]
 project_collection = client["gitconnect"]["project"]
 search_collection = client["gitconnect"]["search"]
-SEARCH_ID = ObjectId("603b9746eaebc306575fa974")
+SEARCH_ID = ObjectId("607f0e5e30484f83ad40dfbb")
 
 
 class ExchangeCode:
