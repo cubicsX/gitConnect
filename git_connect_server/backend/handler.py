@@ -1248,9 +1248,8 @@ class NotificationsHandler:
 
     @staticmethod
     def fetch_and_accept_colloboration_request(project_dict):
-        user_object_id = ObjectId(get_user_object_id())
         project_info = {
-            "USER_ID": user_object_id,
+            "USER_ID": ObjectId(project_dict["user_id"]),
             "PROJECT_ID": ObjectId(project_dict["project_id"]),
             "OWNER_ID": ObjectId(project_dict["project_owner"]),
         }
@@ -1258,9 +1257,8 @@ class NotificationsHandler:
 
     @staticmethod
     def fetch_and_reject_colloboration_request(project_dict):
-        user_object_id = ObjectId(get_user_object_id())
         project_info = {
-            "USER_ID": user_object_id,
+            "USER_ID": ObjectId(project_dict["user_id"]),
             "PROJECT_ID": ObjectId(project_dict["project_id"]),
             "OWNER_ID": ObjectId(project_dict["project_owner"]),
         }
