@@ -7,14 +7,18 @@ from bson.objectid import ObjectId
 
 from django_middleware_global_request.middleware import get_request
 
+
 GITHUB_SECRET = os.environ.get("GITHUB_SECRET")
 GITHUB_CLIENT_ID = os.environ.get("GITHUB_ID")
 GITCONNECT_CLUSTER_PASS = os.environ.get("GITCONNECT_CLUSTER_PASS")
+FIREBASE_AUTH_TOKEN = os.environ.get("FIREBASE_AUTH_TOKEN")
+
 
 class Connect(object):
-    @staticmethod    
+    @staticmethod
     def get_connection():
         return MongoClient(f"mongodb+srv://gitconnect:{GITCONNECT_CLUSTER_PASS}@gitconnectcluster.ytua1.mongodb.net/test")
+
 
 client = Connect.get_connection()
 user_collection = client["gitconnect"]["user"]
@@ -87,7 +91,7 @@ class StoreUser:
             user = user_collection.insert_one(user_info)
             return str(user.inserted_id)
         else:
-            ## We also update user github details here
+            # We also update user github details here
             user_collection.find_one_and_update(
                 {"_id": user["_id"]},
                 {
@@ -132,7 +136,7 @@ class SearchPageHandler:
         all_keys = list(search.keys())
         selected_projects = set()
         flag = False
-        ## generate new keywords_list
+        # generate new keywords_list
         for query_keyword in keywords:
             new_keywords = list()
             for key in all_keys:
@@ -145,7 +149,8 @@ class SearchPageHandler:
                     project_set += search[key]
                 project_set = list(set(project_set))
                 if flag:
-                    selected_projects = set(selected_projects) & set(project_set)
+                    selected_projects = set(
+                        selected_projects) & set(project_set)
                 else:
                     selected_projects = set(project_set)
                     flag = True
@@ -174,7 +179,7 @@ class SearchPageHandler:
         all_keys = list(search.keys())
         selected_projects = set()
         flag = False
-        ## generate new keywords_list
+        # generate new keywords_list
         for query_keyword in keywords:
             new_keywords = list()
             for key in all_keys:
@@ -187,7 +192,8 @@ class SearchPageHandler:
                     project_set += search[key]
                 project_set = list(set(project_set))
                 if flag:
-                    selected_projects = set(selected_projects) | set(project_set)
+                    selected_projects = set(
+                        selected_projects) | set(project_set)
                 else:
                     selected_projects = set(project_set)
                     flag = True
@@ -286,7 +292,8 @@ class SearchPageHandler:
                     )
                 else:
                     flag = True
-                    fetched_project += SearchPageHandler.parse_string_AND(keywords[1])
+                    fetched_project += SearchPageHandler.parse_string_AND(
+                        keywords[1])
             elif keywords[0][1:] == "or":
                 if flag:
                     raise ValueError(
@@ -294,7 +301,8 @@ class SearchPageHandler:
                     )
                 else:
                     flag = True
-                    fetched_project += SearchPageHandler.parse_string_OR(keywords[1])
+                    fetched_project += SearchPageHandler.parse_string_OR(
+                        keywords[1])
             elif keywords[0][1:] == "not":
                 if len(fetched_project) == 0:
                     fetched_project = list(
@@ -328,7 +336,7 @@ class SearchPageHandler:
                 all_keys = list(search.keys())
                 selected_projects = set()
                 flag = False
-                ## generate new keywords_list
+                # generate new keywords_list
                 for query_keyword in keywords:
                     new_keywords = list()
                     for key in all_keys:
@@ -461,7 +469,8 @@ class ProjectHandler:
                 "projectSkills" (integer)
         """
         old_skills = set(
-            project_collection.find_one({"_id": project_info["_id"]})["projectSkills"]
+            project_collection.find_one({"_id": project_info["_id"]})[
+                "projectSkills"]
         )
         new_skills = set(project_info["projectSkills"])
         add_to_search = list(new_skills - old_skills)
@@ -562,7 +571,8 @@ class ProjectHandler:
                 raise ValueError(
                     f"This is never gone be executed, find remove_tag {remove}"
                 )
-        user_owner = user_collection.find_one({"_id": project_info["USER_ID"]})["owner"]
+        user_owner = user_collection.find_one(
+            {"_id": project_info["USER_ID"]})["owner"]
         user_owner.remove(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
             {"_id": project_info["USER_ID"]},
@@ -734,6 +744,64 @@ class UserHandler:
         UserHandler.update_user_profile(user_info=user_dict)
 
 
+class FirebaseHandler:
+    @staticmethod
+    def handle_firebase_token(user_id, notification_token):
+        """
+        Add notification token to user database
+        """
+        user_id = ObjectId(user_id)
+        user = user_collection.find_one({"_id": user_id})
+
+        if user == None:
+            raise ValueError("User not exists in database.")
+        user_collection.find_one_and_update(
+            {"_id": user_id},
+            {
+                "$set": {
+                    "notification_token": notification_token,
+                }
+            },
+            upsert=False,
+        )
+
+    @staticmethod
+    def fetch_notification_from_firebase(user_id=None):
+        if(user_id is None):
+            user_id = ObjectId(get_user_object_id())
+        else:
+            user_id = ObjectId(user_id)
+        user = user_collection.find_one({"_id": user_id})
+        if user is None:
+            raise ValueError(f"No Such user found")
+        notification_bucket = user["notification_bucket"]
+        firebase_token = user["notification_token"]
+        for notification_item in notification_bucket:
+            project_name = project_collection.find_one(
+                {"_id": notification_item["project_id"]}
+            )["projectTitle"]
+            status = notification_item["status"]
+            notification_message = f"Your request is {status} in {project_name}."
+            payload = {
+                "to": firebase_token,
+                "data": {
+                    "title": notification_message,
+                },
+            }
+            data = json.dumps(payload)
+            resp = requests.post(
+                "https://fcm.googleapis.com/fcm/send",
+                data=data,
+                headers={"Authorization": f"key={FIREBASE_AUTH_TOKEN}",
+                         'Content-Type': 'application/json'}
+            )
+        user_collection.find_one_and_update({"_id": user_id}, {
+            "$set": {
+                "notification_bucket": []
+            },
+        }, upsert=False)
+
+
 class ContributionHandler:
     @staticmethod
     def request_contribution(project_info):
@@ -847,7 +915,8 @@ class ContributionHandler:
             "OWNER_ID": ObjectId(contribution_dict["OWNER_ID"]),
         }
 
-        ContributionHandler.request_contribution(project_info=contribution_info)
+        ContributionHandler.request_contribution(
+            project_info=contribution_info)
 
 
 class BookmarkHandler:
@@ -938,7 +1007,8 @@ class GithubProjectList:
         for repo in repo_data_list:
             full_name = repo["full_name"]
             value = f"{base_url}/{full_name}"
-            processed_list.append({"value": value, "label": full_name.split("/")[-1]})
+            processed_list.append(
+                {"value": value, "label": full_name.split("/")[-1]})
         return processed_list
 
 
@@ -1067,9 +1137,9 @@ class NotificationsHandler:
         if user == None:
             raise ValueError("User is not exist in database.")
         contribution_list = user["contributions"]
-        ## add project to user contribution list
+        # add project to user contribution list
         contribution_list.append(project_info["PROJECT_ID"])
-        ## add project to user notification bucket
+        # add project to user notification bucket
         bucket = user["notification_bucket"]
         bucket.append(
             {
@@ -1078,7 +1148,7 @@ class NotificationsHandler:
             }
         )
         user_outgoing = user["outgoing"]
-        ## remove project from user outgoing list
+        # remove project from user outgoing list
         user_outgoing.remove(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
             {"_id": project_info["USER_ID"]},
@@ -1114,6 +1184,7 @@ class NotificationsHandler:
             "USER_ID": project_info["USER_ID"],
             "PROJECT_ID": project_info["PROJECT_ID"],
         }
+        # FirebaseHandler.fetch_notification_from_firebase()
         # NotificationsHandler.add_contribution(contribution_info=contribution_info)
 
     @staticmethod
@@ -1235,8 +1306,10 @@ class NotificationsHandler:
     @staticmethod
     def fetch_and_process_collabrations_and_contributions():
         user_object_id = ObjectId(get_user_object_id())
-        incoming_list = NotificationsHandler.fetch_incoming(user_id=user_object_id)
-        outgoing_list = NotificationsHandler.fetch_outgoing(user_id=user_object_id)
+        incoming_list = NotificationsHandler.fetch_incoming(
+            user_id=user_object_id)
+        outgoing_list = NotificationsHandler.fetch_outgoing(
+            user_id=user_object_id)
         for incoming in incoming_list:
             incoming["user_id"] = str(incoming["user_id"])
             incoming["project_id"] = str(incoming["project_id"])

@@ -13,6 +13,7 @@ from backend.views import (
     ContributionView,
     NotificationView,
     SignOutView,
+    FirebaseView,
 )
 
 urls = [
@@ -32,4 +33,6 @@ urls = [
     path("contribution-view", ContributionView.as_view(), name="ContributionView"),
     path("notification-view", NotificationView.as_view(), name="NotificationView"),
     path("signout", SignOutView.as_view(), name="SignOutView"),
+    path("firebase-view", FirebaseView.as_view(), name="FirebaseView"),
+    
 ]
