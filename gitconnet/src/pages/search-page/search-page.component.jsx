@@ -268,7 +268,7 @@ class SearchPage extends React.Component {
                           <CustomButton
                             title="Github"
                             onClick={() =>
-                              window.open(project.projectGithubURL, "_blank")
+                              window.open(project.projectUrl, "_blank")
                             }
                           />
 
