@@ -17,7 +17,9 @@ FIREBASE_AUTH_TOKEN = os.environ.get("FIREBASE_AUTH_TOKEN")
 class Connect(object):
     @staticmethod
     def get_connection():
-        return MongoClient(f"mongodb+srv://gitconnect:{GITCONNECT_CLUSTER_PASS}@gitconnectcluster.ytua1.mongodb.net/test")
+        return MongoClient(
+            f"mongodb+srv://gitconnect:{GITCONNECT_CLUSTER_PASS}@gitconnectcluster.ytua1.mongodb.net/test"
+        )
 
 
 client = Connect.get_connection()
@@ -149,8 +151,7 @@ class SearchPageHandler:
                     project_set += search[key]
                 project_set = list(set(project_set))
                 if flag:
-                    selected_projects = set(
-                        selected_projects) & set(project_set)
+                    selected_projects = set(selected_projects) & set(project_set)
                 else:
                     selected_projects = set(project_set)
                     flag = True
@@ -192,8 +193,7 @@ class SearchPageHandler:
                     project_set += search[key]
                 project_set = list(set(project_set))
                 if flag:
-                    selected_projects = set(
-                        selected_projects) | set(project_set)
+                    selected_projects = set(selected_projects) | set(project_set)
                 else:
                     selected_projects = set(project_set)
                     flag = True
@@ -292,8 +292,7 @@ class SearchPageHandler:
                     )
                 else:
                     flag = True
-                    fetched_project += SearchPageHandler.parse_string_AND(
-                        keywords[1])
+                    fetched_project += SearchPageHandler.parse_string_AND(keywords[1])
             elif keywords[0][1:] == "or":
                 if flag:
                     raise ValueError(
@@ -301,8 +300,7 @@ class SearchPageHandler:
                     )
                 else:
                     flag = True
-                    fetched_project += SearchPageHandler.parse_string_OR(
-                        keywords[1])
+                    fetched_project += SearchPageHandler.parse_string_OR(keywords[1])
             elif keywords[0][1:] == "not":
                 if len(fetched_project) == 0:
                     fetched_project = list(
@@ -469,8 +467,7 @@ class ProjectHandler:
                 "projectSkills" (integer)
         """
         old_skills = set(
-            project_collection.find_one({"_id": project_info["_id"]})[
-                "projectSkills"]
+            project_collection.find_one({"_id": project_info["_id"]})["projectSkills"]
         )
         new_skills = set(project_info["projectSkills"])
         add_to_search = list(new_skills - old_skills)
@@ -571,8 +568,7 @@ class ProjectHandler:
                 raise ValueError(
                     f"This is never gone be executed, find remove_tag {remove}"
                 )
-        user_owner = user_collection.find_one(
-            {"_id": project_info["USER_ID"]})["owner"]
+        user_owner = user_collection.find_one({"_id": project_info["USER_ID"]})["owner"]
         user_owner.remove(project_info["PROJECT_ID"])
         user_collection.find_one_and_update(
             {"_id": project_info["USER_ID"]},
@@ -767,7 +763,7 @@ class FirebaseHandler:
 
     @staticmethod
     def fetch_notification_from_firebase(user_id=None):
-        if(user_id is None):
+        if user_id is None:
             user_id = ObjectId(get_user_object_id())
         else:
             user_id = ObjectId(user_id)
@@ -792,14 +788,18 @@ class FirebaseHandler:
             resp = requests.post(
                 "https://fcm.googleapis.com/fcm/send",
                 data=data,
-                headers={"Authorization": f"key={FIREBASE_AUTH_TOKEN}",
-                         'Content-Type': 'application/json'}
+                headers={
+                    "Authorization": f"key={FIREBASE_AUTH_TOKEN}",
+                    "Content-Type": "application/json",
+                },
             )
-        user_collection.find_one_and_update({"_id": user_id}, {
-            "$set": {
-                "notification_bucket": []
+        user_collection.find_one_and_update(
+            {"_id": user_id},
+            {
+                "$set": {"notification_bucket": []},
             },
-        }, upsert=False)
+            upsert=False,
+        )
 
 
 class ContributionHandler:
@@ -915,8 +915,7 @@ class ContributionHandler:
             "OWNER_ID": ObjectId(contribution_dict["OWNER_ID"]),
         }
 
-        ContributionHandler.request_contribution(
-            project_info=contribution_info)
+        ContributionHandler.request_contribution(project_info=contribution_info)
 
 
 class BookmarkHandler:
@@ -1007,8 +1006,7 @@ class GithubProjectList:
         for repo in repo_data_list:
             full_name = repo["full_name"]
             value = f"{base_url}/{full_name}"
-            processed_list.append(
-                {"value": value, "label": full_name.split("/")[-1]})
+            processed_list.append({"value": value, "label": full_name.split("/")[-1]})
         return processed_list
 
 
@@ -1306,10 +1304,8 @@ class NotificationsHandler:
     @staticmethod
     def fetch_and_process_collabrations_and_contributions():
         user_object_id = ObjectId(get_user_object_id())
-        incoming_list = NotificationsHandler.fetch_incoming(
-            user_id=user_object_id)
-        outgoing_list = NotificationsHandler.fetch_outgoing(
-            user_id=user_object_id)
+        incoming_list = NotificationsHandler.fetch_incoming(user_id=user_object_id)
+        outgoing_list = NotificationsHandler.fetch_outgoing(user_id=user_object_id)
         for incoming in incoming_list:
             incoming["user_id"] = str(incoming["user_id"])
             incoming["project_id"] = str(incoming["project_id"])

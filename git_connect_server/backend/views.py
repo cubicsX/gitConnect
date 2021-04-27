@@ -19,7 +19,6 @@ import json
 import logging
 
 
-
 class GithubOAuth(APIView):
     def get(self, request: Request):
         code = request.GET["code"]
@@ -30,6 +29,7 @@ class GithubOAuth(APIView):
         user_object_id = StoreUser.fetch_and_crete_user_details()
         request.session["user_object_id"] = user_object_id
         return HttpResponseRedirect("http://localhost:3000")
+
 
 class TestEndPoint(APIView):
     def get(self, request: Request):
@@ -152,6 +152,7 @@ class SignOutView(APIView):
         del request.session["user_object_id"]
         return Response()
 
+
 class FirebaseView(APIView):
     def post(self, request: Request):
         user_id = request.session["user_object_id"]
@@ -164,6 +165,8 @@ class FirebaseView(APIView):
         user_id = request.session["user_object_id"]
         FirebaseHandler.fetch_notification_from_firebase(user_id)
         return Response()
+
+
 """
     Future Requirements [@team]:
      - When user accept an incoming request show total number of user under that project .
